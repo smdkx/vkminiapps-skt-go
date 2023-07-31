@@ -9,4 +9,4 @@
 - Сохранение позиции скролла для панелей и элементов;
 - Scroll To Top (ios);
 - Поддержка EPIC TABBAR;
-— SwipeBack для iOS
+- SwipeBack для iOS
