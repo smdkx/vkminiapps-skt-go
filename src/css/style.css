@@ -1,0 +1,330 @@
+/* Plug's */
+
+.plug, .news {
+  display: block;
+  width: 90%;
+  margin: auto;
+  max-width: 500px;
+}
+
+/* New block */
+
+.block__new {
+  color: #FFFFFF;
+  background-color: #3F8AE0;
+  border-radius: 25px;
+  padding: 0 5px;
+  font-size: 15px;
+}
+
+/* Block Random Memes / Sasha */
+
+.random__block {
+  display: block;
+  width: 80%;
+  max-width: 500px;
+  margin: auto;
+}
+
+.random__div {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+/* Tabbar click */
+
+.TabbarItem, .Banner__dismissIcon {
+  cursor: pointer;
+}
+
+/* Межстроковый пробел */
+
+.tw {
+  white-space: pre-wrap;
+}
+
+/* Achievements */
+
+.Achievements__filter {
+  filter: grayscale(100%);
+  border-radius: 8px;
+}
+
+.Achievements_logo {
+  display: flex;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Not ready block */
+
+.not__ready {
+  filter: grayscale(100%);
+  color: #818c99;
+}
+
+/* Sasha page */
+
+.Sasha__fond {
+  display: block;
+  margin: 0 auto;
+  margin-top: 20px;
+  width: 300px;
+  height: 300px;
+}
+
+/* Top and dev avatar's */
+
+.GlobalPlace__container {
+  display: flex;
+  align-items: center;
+}
+
+.GlobalPlace__avatar {
+  margin-right: 8px;
+}
+
+.GlobalPlace__indicator {
+  color: var(--accent);
+  margin-right: 8px;
+  min-width: 28px;
+  text-align: center;
+}
+
+.avatar__photo {
+  z-index: 1;
+}
+
+.avatar__indicator {
+  position: absolute;
+  bottom: -3px;
+  right: -2px;
+  z-index: 2;
+}
+
+.avatar {
+  position: relative;
+  margin: 6px 12px 6px 0;
+}
+
+/* FeedBack Banner */
+
+.FeedbackBanner {
+  display: -webkit-flex;
+  display: flex;
+  padding: 14px 16px;
+  border-radius: 14px;
+  /* background-color: var(--content_tint_background); */
+  cursor: pointer;
+}
+
+.FeedbackBanner__main {
+  -webkit-flex: 1 1;
+  flex: 1 1;
+}
+
+.FeedbackBanner__header {
+  font-size: 17px;
+  line-height: 22px;
+  color: var(--accent);
+}
+
+.FeedbackBanner__subheader {
+  font-size: 14px;
+  line-height: 18px;
+  margin-top: 2px;
+}
+
+.FeedbackBanner__aside {
+  display: -webkit-flex;
+  display: flex;
+  margin-left: 8px;
+  -webkit-align-items: center;
+  align-items: center;
+  color: var(--icon_tertiary);
+}
+
+/* Custom Banner's */
+
+.CustomBanner {
+  display: -webkit-flex;
+  display: flex;
+  padding: 12px;
+  border-radius: 14px;
+  /* background-color: var(--content_tint_background); */
+}
+
+.CustomBanner__main {
+  -webkit-flex: 1 1;
+  flex: 1 1;
+}
+
+.CustomBanner__header {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 22px;
+  margin-bottom: 3px;
+  margin-left: 4px;
+  color: var(--text_primary);
+}
+
+.CustomBanner__subheader {
+  color: var(--text_subhead);
+  font-size: 14px;
+  line-height: 18px;
+  margin-top: 0px;
+  margin-left: 5px;
+}
+
+.CustomBanner__aside {
+  display: -webkit-flex;
+  display: flex;
+  margin-right: 8px;
+  margin-bottom: auto;
+  -webkit-align-items: center;
+  align-items: center;
+  /* color: var(--icon_tertiary); */
+}
+
+.fullContainer {
+  background: var(--content_tint_background);
+  border-radius: 16px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+/* FeedBack Panel */
+
+.FeedbackPanel__icon {
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  background-repeat: no-repeat;
+  background-position: 50%;
+  background-size: contain;
+  opacity: .5;
+  transition: .2s ease-in-out;
+}
+
+.FeedbackPanel__icon--1 {
+  background-image: url(../img/feedback/emoji_1.png);
+}
+
+.FeedbackPanel__icon--2 {
+  background-image: url(../img/feedback/emoji_2.png);
+}
+
+.FeedbackPanel__icon--3 {
+  background-image: url(../img/feedback/emoji_3.png);
+}
+
+.FeedbackPanel__icon--4 {
+  background-image: url(../img/feedback/emoji_4.png);
+}
+
+.FeedbackPanel__icon--5 {
+  background-image: url(../img/feedback/emoji_5.png);
+}
+
+.FeedbackPanel__icons {
+  display: -webkit-flex;
+  display: flex;
+  height: 48px;
+}
+
+/* Tabbar */
+
+/*
+.Tabbar {
+  border-radius: 15px;
+  /*box-shadow: none !important;*/
+  /*box-shadow: 0 -2px 4px 0 rgb(0 0 0 / 6%), 0 0 2px 0 rgb(0 0 0 / 8%);*/
+  /*
+  box-shadow: 0 0 20px 8px rgba(0,0,0,0.15) !important;
+  padding: 5px;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  margin: 13px;
+  width: 90% !important;
+}
+*/
+
+/*
+.Tabbar--ios.Tabbar--shadow:before {
+  display:none !important;
+}
+*/
+
+/*
+.TabbarItem--selected {
+  animation-name: boop;
+  animation-duration: 0.7s;
+}
+*/
+
+/*
+.Snackbar--ios .Snackbar__body {
+  border-radius: 15px;
+  margin-bottom: 15px;
+}
+*/
+
+/*
+.SafeAreaTabbar {
+  margin-bottom: 15px;
+}
+*/
+
+/* Animation tabbar */
+
+@keyframes boop {
+  25% {
+  -moz-transform: scale(1.2);
+  -webkit-transform: scale(1.2);
+  -o-transform: scale(1.2);
+  -ms-transform: scale(1.2);
+  transform: scale(1.2);
+  }
+  50% {
+  -moz-transform: scale(0.8);
+  -webkit-transform: scale(0.8);
+  -o-transform: scale(0.8);
+  -ms-transform: scale(0.8);
+  transform: scale(0.8);
+  }
+  100% {
+  -moz-transform: scale(1);
+  -webkit-transform: scale(1);
+  -o-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  }
+}
+  
+@keyframes boop {
+  25% {
+  -moz-transform: scale(1.1);
+  -webkit-transform: scale(1.1);
+  -o-transform: scale(1.1);
+  -ms-transform: scale(1.1);
+  transform: scale(1.1);
+  }
+  50% {
+  -moz-transform: scale(0.9);
+  -webkit-transform: scale(0.9);
+  -o-transform: scale(0.9);
+  -ms-transform: scale(0.9);
+  transform: scale(0.9);
+  }
+  100% {
+  -moz-transform: scale(1);
+  -webkit-transform: scale(1);
+  -o-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  }
+}
