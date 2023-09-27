@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 
 import {setPage, openModal} from "../store/router/actions";
 
-import { VersionApp } from '../components/settings';
+import { __version } from './profile.data.js';
 
 import bridge from '@vkontakte/vk-bridge';
 
@@ -230,7 +230,7 @@ class Profile extends React.Component {
                             <SimpleCell
                             disabled
                             before={<Icon28ServicesOutline/>} 
-                            description={VersionApp}
+                            description={__version}
                             >
                                 Версия приложения
                             </SimpleCell>

@@ -40,9 +40,6 @@ import Service from './js/panels/service';
 import News from './js/panels/news';
 import Profile from './js/panels/profile';
 
-//FAQ
-import FAQ from './js/panels/faq'; //временно не используется
-
 //Feedback
 import Feedback from './js/panels/feedback'; 
 
@@ -245,8 +242,6 @@ class App extends React.Component {
                             onSwipeBack={() => goBack()}
                         >
                             <Home id="home_tab"/>
-
-                            <FAQ id="faq"/>
 
                             <Feedback id="feedback"/>
 

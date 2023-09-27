@@ -228,7 +228,7 @@ class TopStudent extends React.Component {
                             9
                         </div>
                         <div className="avatar">
-                            <Avatar size={48} src={"https://sun9-29.userapi.com/sun9-85/impg/671acVSTpP_yWuYrFO6B8wAz1uig-k37nt2v8A/h3rZChtgbU8.jpg?size=2080x2080&quality=96&sign=555f9e75150ed072d82e3c954cd53458&type=album"} className="avatar__photo" />
+                            <Avatar size={48} src={"https://sun9-54.userapi.com/impg/zy4Fuqjv1B_vWbcFPEU8RgRj8MJEnncXzc0wMw/KwphifUvRPE.jpg?size=2560x1920&quality=95&sign=84294475427e1e7902d13ea1dccd5b7c&type=album"} className="avatar__photo" />
                         </div>
                     </div>
                 }
