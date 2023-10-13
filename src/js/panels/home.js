@@ -252,7 +252,7 @@ class Home extends React.Component {
                             before={<Icon28LogoVkOutline/>} 
                             href='https://vk.com/skt_club' target="_blank"
                             >
-                                Качественный контент
+                                Качественный контент <span className="block__hot">HOT</span>
                             </SimpleCell>
 
                             <SimpleCell

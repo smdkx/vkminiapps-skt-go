@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 
 import {setPage, openModal} from "../store/router/actions";
 
-import { __version } from './profile.data.js';
+import { __version } from '../components/data/profile.data';
 
 import bridge from '@vkontakte/vk-bridge';
 

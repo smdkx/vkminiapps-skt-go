@@ -35,20 +35,6 @@ class News extends React.Component {
     render() {
         const {id} = this.props;
 
-        /*return (
-            <Panel id={id} centered={true}>
-                <PanelHeader>Новости</PanelHeader>
-                <Group>
-                    <img className="news" src={img_plug} alt="news" />
-                    <Placeholder
-                    header="Новости не найдены"
-                    >
-                        К сожалению, новостей пока нет или они не были найдены.
-                    </Placeholder>
-                </Group>
-            </Panel>
-        );*/
-
         return (
 
             <Panel id={id}>

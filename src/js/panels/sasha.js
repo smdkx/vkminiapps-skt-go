@@ -68,7 +68,7 @@ class Sasha extends React.Component {
 
                 <img className="random__block" src="https://sun9-71.userapi.com/impg/ocxqPVvXRoEBcmCQotX8GqRrbPyGc5jPSAtCsQ/y4qf71FryS0.jpg?size=950x1080&quality=96&sign=5e44eb56e79a6cccccdc5d938661351e&type=album" alt="sasha" />
 
-                <Footer>RIP <Link href="https://vk.com/reizyk" target="_blank">Сашка</Link> 2kTwentyTwo</Footer>
+                <Footer>RIP <Link href="https://vk.com/reizyk" target="_blank">Сашка</Link> 2kTwentyThree</Footer>
 
             </Panel>
         );
