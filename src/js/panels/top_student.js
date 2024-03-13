@@ -64,9 +64,9 @@ class TopStudent extends React.Component {
                         <div className="GlobalPlace__indicator">
                             1
                         </div>
-                        <div className="avatar">
-                            <Avatar size={48} src={"https://sun1-15.userapi.com/impg/MvErWkYtBrLQcYNg_ubfiuqvfNT3dIC02Elr-Q/XedyG5QFNK8.jpg?size=1620x2160&quality=95&sign=98ba5a99b44fec8c9568985c65058bb3&type=album"} className="avatar__photo" />
-                            <div className="avatar__indicator" >
+                        <div className="Avatar__photo">
+                            <Avatar size={48} src={"https://sun136-2.userapi.com/s/v1/if2/lzcIWUnCeBzKDydWMbhPH2fxHsxp-9dI705hbP7SF9Y46YKf3Ds7TbE3OiALkNjv1CgObMFBP4lxC28GNe77_oUN.jpg?quality=95&crop=0,134,1920,1920&as=50x50,100x100,200x200,400x400&ava=1&u=Liqd12nqfacgh_uZadAe2Aee961dIx41IQBn-mx1tiU&cs=200x200"} />
+                            <div className="Avatar__indicator" >
                                 <svg style={numericIndicator} width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M0 14C0 6.268 6.268 0 14 0C21.732 0 28 6.268 28 14C28 21.732 21.732 28 14 28C6.268 28 0 21.732 0 14Z" fill="url(#paint_linear)"/>
                                     <path d="M11.3325 21.1202L9.16742 19.8702" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
@@ -98,9 +98,9 @@ class TopStudent extends React.Component {
                         <div className="GlobalPlace__indicator">
                             2
                         </div>
-                        <div className="avatar">
-                            <Avatar size={48} src={"https://sun9-84.userapi.com/s/v1/if2/Ko0cSBGD-BwzqulGBozgmW0EwxQlQfv_c9l-6HjLC54PKR4HAWxKXnMmMD3xsGKlIW3Yc5Z_0-eP9chofP_I7QbR.jpg?size=994x784&quality=95&type=album"} className="avatar__photo" />
-                            <div className="avatar__indicator" >
+                        <div className="Avatar__photo">
+                            <Avatar size={48} src={"https://sun136-1.userapi.com/s/v1/if2/DTOIjd_si5Wi42AWsrkx7QzqArrv1d933u9RN23EZZBwpT3EBkMPCr9gmHRUt-qdRFBLTtXT4_SkRKPffP_do4gy.jpg?quality=95&crop=26,0,835,835&as=50x50,100x100,200x200,400x400&ava=1&u=WQiyUHYp0GsWN1eWFIvu5e4m1c-oORsJqCXKMkfxPJs&cs=200x200"} />
+                            <div className="Avatar__indicator" >
                                 <Icon20DonateCircleFillYellow style={numericIndicator} />
                             </div>
                         </div>
@@ -119,8 +119,11 @@ class TopStudent extends React.Component {
                         <div className="GlobalPlace__indicator">
                             3
                         </div>
-                        <div className="avatar">
-                            <Avatar size={48} src={"https://sun9-29.userapi.com/sun9-63/impf/c845521/v845521377/591d5/tQ7y7zGJ3hY.jpg?size=1455x2160&quality=96&sign=f988aba8906ce71495de33b6a6ab3e19&type=album"} className="avatar__photo" />
+                        <div className="Avatar__photo">
+                            <Avatar size={48} src={"https://sun136-2.userapi.com/s/v1/if2/HLkSlW2YQLpC7C0CM_8My2UJQigGp2-940Qr7U7q-H2CnPDmQ0MvLBtxfNetQTRVhKi1zsOtsLfkxx5vboXXb6aD.jpg?quality=95&crop=316,429,1036,1036&as=50x50,100x100,200x200,400x400&ava=1&u=WufiXWhllfVsDbgdq7ivFRImaN-1GHzdkTMQSqBggts&cs=200x200"} />
+                            <div className="Avatar__indicator" >
+                                <Icon20DonateCircleFillYellow style={numericIndicator} />
+                            </div>
                         </div>
                     </div>
                 }
@@ -137,8 +140,8 @@ class TopStudent extends React.Component {
                         <div className="GlobalPlace__indicator">
                             4
                         </div>
-                        <div className="avatar">
-                            <Avatar size={48} src={"https://sun9-29.userapi.com/sun9-26/impg/WF15zKBdDGp95p4E4fuaREOz1EGHI5L5mvkM3Q/F63LD-YKEXw.jpg?size=2160x2160&quality=96&sign=cfbd0c031ed0c361ea121cecdfc07b50&type=album"} className="avatar__photo" />
+                        <div className="Avatar__photo">
+                            <Avatar size={48} src={"https://sun136-2.userapi.com/s/v1/if2/iHLm-c1vgn-oIuOd8B18a-YCOmwwY4tTc3TnmzhZzRRcLqxg0Mj9WeoXHCJsb_GvzI_VzO7auRVbQankdXI0GeSV.jpg?quality=95&crop=0,229,2331,2331&as=50x50,100x100,200x200,400x400&ava=1&u=J_sb3fb-HpYzGIgonZQ7uwOwEC9bBzSKKwfudo_Ix1U&cs=200x200"} />
                         </div>
                     </div>
                 }
@@ -155,8 +158,8 @@ class TopStudent extends React.Component {
                         <div className="GlobalPlace__indicator">
                             5
                         </div>
-                        <div className="avatar">
-                            <Avatar size={48} src={"https://sun9-29.userapi.com/sun9-54/impg/BOZq69dHaojKUOMOephi3huDlbHQ5reEnM3Mtg/KbzBI_xzNc8.jpg?size=1200x1600&quality=96&sign=e0175425a52a63c1e2aba4f074949b09&type=album"} className="avatar__photo" />
+                        <div className="Avatar__photo">
+                            <Avatar size={48} src={"https://sun136-1.userapi.com/s/v1/if2/x71FvVbUafqw2mXf4YlBFHl1zhu4gKLUZ-QNgkXBGPuvej3Ho0jkUvyz8pX0JeOcs1AqrllDW2e9pz--7otA3hRM.jpg?quality=95&crop=91,630,1799,1799&as=50x50,100x100,200x200,400x400&ava=1&u=JTy9RiAFJ-kqkZ5Ab_VwOuAK8ZFWmhVgLdqb1mykK5Q&cs=200x200"} />
                         </div>
                     </div>
                 }
@@ -173,8 +176,8 @@ class TopStudent extends React.Component {
                         <div className="GlobalPlace__indicator">
                             6
                         </div>
-                        <div className="avatar">
-                            <Avatar size={48} src={"https://sun9-34.userapi.com/impg/ng5xdkJX6Pz65MYjMdQrH6MSQFiNJEPOufdg2g/-zNQ6HWdJeA.jpg?size=1620x2160&quality=95&sign=06208e0751992167024af12046451061&type=album"} className="avatar__photo" />
+                        <div className="Avatar__photo">
+                            <Avatar size={48} src={"https://sun9-34.userapi.com/impg/ng5xdkJX6Pz65MYjMdQrH6MSQFiNJEPOufdg2g/-zNQ6HWdJeA.jpg?size=1620x2160&quality=95&sign=06208e0751992167024af12046451061&type=album&cs=200x200"} />
                         </div>
                     </div>
                 }
@@ -191,8 +194,8 @@ class TopStudent extends React.Component {
                         <div className="GlobalPlace__indicator">
                             7
                         </div>
-                        <div className="avatar">
-                            <Avatar size={48} src={"https://sun9-29.userapi.com/sun9-54/impg/VCXeDshShuvV-qXIMSmyeejaYMrv4Mil2BcHEQ/bDs0Nu0vFnE.jpg?size=1622x2160&quality=96&sign=c0562c92699542aaf0f8aaac37ab16ff&type=album"} className="avatar__photo" />
+                        <div className="Avatar__photo">
+                            <Avatar size={48} src={"https://sun9-29.userapi.com/sun9-54/impg/VCXeDshShuvV-qXIMSmyeejaYMrv4Mil2BcHEQ/bDs0Nu0vFnE.jpg?size=1622x2160&quality=96&sign=c0562c92699542aaf0f8aaac37ab16ff&type=album&cs=200x200"} />
                         </div>
                     </div>
                 }
@@ -209,8 +212,8 @@ class TopStudent extends React.Component {
                         <div className="GlobalPlace__indicator">
                             8
                         </div>
-                        <div className="avatar">
-                            <Avatar size={48} src={"https://sun9-74.userapi.com/impg/q7zhvQbal-fWakBJtqNjL9NVVerDUVnQ_RbACw/QwMNKhwkwUw.jpg?size=1620x2160&quality=95&sign=4eb6e1ab6fccb772c429a3b1c9713809&type=album"} className="avatar__photo" />
+                        <div className="Avatar__photo">
+                            <Avatar size={48} src={"https://sun9-74.userapi.com/impg/q7zhvQbal-fWakBJtqNjL9NVVerDUVnQ_RbACw/QwMNKhwkwUw.jpg?size=1620x2160&quality=95&sign=4eb6e1ab6fccb772c429a3b1c9713809&type=album&cs=200x200"} />
                         </div>
                     </div>
                 }
@@ -227,8 +230,8 @@ class TopStudent extends React.Component {
                         <div className="GlobalPlace__indicator">
                             9
                         </div>
-                        <div className="avatar">
-                            <Avatar size={48} src={"https://sun9-54.userapi.com/impg/zy4Fuqjv1B_vWbcFPEU8RgRj8MJEnncXzc0wMw/KwphifUvRPE.jpg?size=2560x1920&quality=95&sign=84294475427e1e7902d13ea1dccd5b7c&type=album"} className="avatar__photo" />
+                        <div className="Avatar__photo">
+                            <Avatar size={48} src={"https://sun136-1.userapi.com/s/v1/if2/1mKabGX9URPgrm7C8pk_v8MAbobgu-FhzyurPw0WDPvU39s_4ssq7YxEZiFsBpkmlte5W1O6TOOT_0QDh1qSluLX.jpg?quality=95&crop=779,498,1105,1105&as=50x50,100x100,200x200,400x400&ava=1&u=jy0tN5Un4t2oO7su3wlUgxsevWRAbOJcMtzwBzlqRmE&cs=200x200"} />
                         </div>
                     </div>
                 }
@@ -245,8 +248,8 @@ class TopStudent extends React.Component {
                         <div className="GlobalPlace__indicator">
                             10
                         </div>
-                        <div className="avatar">
-                            <Avatar size={48} className="avatar__photo" />
+                        <div className="Avatar__photo">
+                            <Avatar size={48} src={"https://pp.userapi.com/nKpB1Qq39oLk0_S8_C9PolGFFUpM5n8FnzKC7A/ucP1cjlkpZk.png"} />
                         </div>
                     </div>
                 }

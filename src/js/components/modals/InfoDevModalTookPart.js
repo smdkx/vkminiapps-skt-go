@@ -79,9 +79,9 @@ class InfoDevModalTookPart extends React.Component {
                             expandable = 'true'
                             href="https://vk.com/id167786810" target="_blank"
                             before={
-                            <div className="avatar">
-                                <Avatar size={48} src={"https://sun9-84.userapi.com/s/v1/if2/Ko0cSBGD-BwzqulGBozgmW0EwxQlQfv_c9l-6HjLC54PKR4HAWxKXnMmMD3xsGKlIW3Yc5Z_0-eP9chofP_I7QbR.jpg?size=994x784&quality=95&type=album"} className="avatar__photo" />
-                                <div className="avatar__indicator" >
+                            <div className="Avatar__photo">
+                                <Avatar size={48} src={"https://sun136-1.userapi.com/s/v1/if2/DTOIjd_si5Wi42AWsrkx7QzqArrv1d933u9RN23EZZBwpT3EBkMPCr9gmHRUt-qdRFBLTtXT4_SkRKPffP_do4gy.jpg?quality=95&crop=26,0,835,835&as=50x50,100x100,200x200,400x400&ava=1&u=WQiyUHYp0GsWN1eWFIvu5e4m1c-oORsJqCXKMkfxPJs&cs=200x200"} />
+                                <div className="Avatar__indicator" >
                                     <Icon20DonateCircleFillYellow style={numericIndicator} />
                                 </div>
                             </div>
@@ -95,8 +95,11 @@ class InfoDevModalTookPart extends React.Component {
                             expandable = 'true'
                             href="https://vk.com/id142033810" target="_blank"
                             before={
-                                <div className="avatar">
-                                    <Avatar size={48} src={"https://sun9-29.userapi.com/sun9-63/impf/c845521/v845521377/591d5/tQ7y7zGJ3hY.jpg?size=1455x2160&quality=96&sign=f988aba8906ce71495de33b6a6ab3e19&type=album"} className="avatar__photo" />
+                                <div className="Avatar__photo">
+                                    <Avatar size={48} src={"https://sun136-2.userapi.com/s/v1/if2/HLkSlW2YQLpC7C0CM_8My2UJQigGp2-940Qr7U7q-H2CnPDmQ0MvLBtxfNetQTRVhKi1zsOtsLfkxx5vboXXb6aD.jpg?quality=95&crop=316,429,1036,1036&as=50x50,100x100,200x200,400x400&ava=1&u=WufiXWhllfVsDbgdq7ivFRImaN-1GHzdkTMQSqBggts&cs=200x200"} />
+                                    <div className="Avatar__indicator" >
+                                        <Icon20DonateCircleFillYellow style={numericIndicator} />
+                                    </div>
                                 </div>
                             }
                             description='Не пытается починить настройки'

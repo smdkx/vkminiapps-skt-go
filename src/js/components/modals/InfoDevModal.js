@@ -82,9 +82,9 @@ class InfoDevModal extends React.Component {
                             description="Grand developer / Creator"
                             href="https://vk.com/id214477552" target="_blank"
                             before={
-                            <div className="avatar">
-                                <Avatar size={48} src={"https://sun9-15.userapi.com/s/v1/ig2/i6yDdohyl3nQ3nH00dTUUZiq222nQik-LPPtyegJOtZS3DqI9VwQNEMRb79T_A7OE2biaq4rWhBt507FgFaf-9fl.jpg?size=1620x2160&quality=95&type=album"} className="avatar__photo" />
-                                <div className="avatar__indicator" >
+                            <div className="Avatar__photo">
+                                <Avatar size={48} src={"https://sun136-2.userapi.com/s/v1/if2/lzcIWUnCeBzKDydWMbhPH2fxHsxp-9dI705hbP7SF9Y46YKf3Ds7TbE3OiALkNjv1CgObMFBP4lxC28GNe77_oUN.jpg?quality=95&crop=0,134,1920,1920&as=50x50,100x100,200x200,400x400&ava=1&u=Liqd12nqfacgh_uZadAe2Aee961dIx41IQBn-mx1tiU&cs=200x200"} />
+                                <div className="Avatar__indicator" >
                                     <svg style={numericIndicator} width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M0 14C0 6.268 6.268 0 14 0C21.732 0 28 6.268 28 14C28 21.732 21.732 28 14 28C6.268 28 0 21.732 0 14Z" fill="url(#paint_linear)"/>
                                         <path d="M11.3325 21.1202L9.16742 19.8702" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>

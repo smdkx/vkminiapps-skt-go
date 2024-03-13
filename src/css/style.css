@@ -129,18 +129,14 @@ a, div, img, p, button {
   text-align: center;
 }
 
-.avatar__photo {
-  z-index: 1;
-}
-
-.avatar__indicator {
+.Avatar__indicator {
   position: absolute;
   bottom: -3px;
   right: -2px;
   z-index: 2;
 }
 
-.avatar {
+.Avatar__photo {
   position: relative;
   margin: 6px 12px 6px 0;
 }
