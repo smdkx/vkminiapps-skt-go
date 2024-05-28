@@ -19,7 +19,8 @@ import {
 import { 
     Icon24Dismiss,
     Icon24Cancel,
-    Icon28UserOutline
+    Icon28UserOutline,
+    Icon20FireCircleFillRed
 } from '@vkontakte/icons';
 
 import queryString from 'query-string';
@@ -84,7 +85,7 @@ class InfoDevModal extends React.Component {
                             before={
                             <div className="Avatar__photo">
                                 <Avatar size={48} src={"https://sun136-2.userapi.com/s/v1/if2/lzcIWUnCeBzKDydWMbhPH2fxHsxp-9dI705hbP7SF9Y46YKf3Ds7TbE3OiALkNjv1CgObMFBP4lxC28GNe77_oUN.jpg?quality=95&crop=0,134,1920,1920&as=50x50,100x100,200x200,400x400&ava=1&u=Liqd12nqfacgh_uZadAe2Aee961dIx41IQBn-mx1tiU&cs=200x200"} />
-                                <div className="Avatar__indicator" >
+                                {/* <div className="Avatar__indicator" >
                                     <svg style={numericIndicator} width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M0 14C0 6.268 6.268 0 14 0C21.732 0 28 6.268 28 14C28 21.732 21.732 28 14 28C6.268 28 0 21.732 0 14Z" fill="url(#paint_linear)"/>
                                         <path d="M11.3325 21.1202L9.16742 19.8702" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
@@ -99,6 +100,9 @@ class InfoDevModal extends React.Component {
                                             </linearGradient>
                                         </defs>
                                     </svg>
+                                </div> */}
+                                <div className="Avatar__indicator" >
+                                <Icon20FireCircleFillRed style={numericIndicator} />
                                 </div>
                             </div>
                             }
