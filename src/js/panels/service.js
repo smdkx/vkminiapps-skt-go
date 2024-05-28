@@ -133,7 +133,7 @@ class Other extends React.Component {
                         }}
                     />
                     }
-                    //asideMode="dismiss"
+                    asideMode="dismiss"
                     onDismiss={() => {
                         this.setState({
                             BannerNewStatus: false
