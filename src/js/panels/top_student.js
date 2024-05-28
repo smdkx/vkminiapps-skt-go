@@ -14,7 +14,12 @@ import {
 
 import { 
     Icon28HelpCircleOutline,
-    Icon20DonateCircleFillYellow 
+    Icon20DonateCircleFillYellow,
+    Icon201CircleFillGold,
+    Icon202CircleFillSilver,
+    Icon203CircleFillBronze,
+    Icon20GiftCircleFillYellow,
+    Icon20FireCircleFillRed
 } from '@vkontakte/icons';
 
 const numericIndicator = {
@@ -62,11 +67,11 @@ class TopStudent extends React.Component {
                 before={
                     <div className="GlobalPlace__container">
                         <div className="GlobalPlace__indicator">
-                            1
+                            <Icon201CircleFillGold />
                         </div>
                         <div className="Avatar__photo">
                             <Avatar size={48} src={"https://sun136-2.userapi.com/s/v1/if2/lzcIWUnCeBzKDydWMbhPH2fxHsxp-9dI705hbP7SF9Y46YKf3Ds7TbE3OiALkNjv1CgObMFBP4lxC28GNe77_oUN.jpg?quality=95&crop=0,134,1920,1920&as=50x50,100x100,200x200,400x400&ava=1&u=Liqd12nqfacgh_uZadAe2Aee961dIx41IQBn-mx1tiU&cs=200x200"} />
-                            <div className="Avatar__indicator" >
+                            {/* <div className="Avatar__indicator" >
                                 <svg style={numericIndicator} width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M0 14C0 6.268 6.268 0 14 0C21.732 0 28 6.268 28 14C28 21.732 21.732 28 14 28C6.268 28 0 21.732 0 14Z" fill="url(#paint_linear)"/>
                                     <path d="M11.3325 21.1202L9.16742 19.8702" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
@@ -81,6 +86,9 @@ class TopStudent extends React.Component {
                                         </linearGradient>
                                     </defs>
                                 </svg>
+                            </div> */}
+                            <div className="Avatar__indicator" >
+                                <Icon20FireCircleFillRed style={numericIndicator} />
                             </div>
                         </div>
                     </div>
@@ -96,7 +104,7 @@ class TopStudent extends React.Component {
                 before={
                     <div className="GlobalPlace__container">
                         <div className="GlobalPlace__indicator">
-                            2
+                            <Icon202CircleFillSilver />
                         </div>
                         <div className="Avatar__photo">
                             <Avatar size={48} src={"https://sun136-1.userapi.com/s/v1/if2/DTOIjd_si5Wi42AWsrkx7QzqArrv1d933u9RN23EZZBwpT3EBkMPCr9gmHRUt-qdRFBLTtXT4_SkRKPffP_do4gy.jpg?quality=95&crop=26,0,835,835&as=50x50,100x100,200x200,400x400&ava=1&u=WQiyUHYp0GsWN1eWFIvu5e4m1c-oORsJqCXKMkfxPJs&cs=200x200"} />
@@ -117,7 +125,7 @@ class TopStudent extends React.Component {
                 before={
                     <div className="GlobalPlace__container" >
                         <div className="GlobalPlace__indicator">
-                            3
+                            <Icon203CircleFillBronze />
                         </div>
                         <div className="Avatar__photo">
                             <Avatar size={48} src={"https://sun136-2.userapi.com/s/v1/if2/HLkSlW2YQLpC7C0CM_8My2UJQigGp2-940Qr7U7q-H2CnPDmQ0MvLBtxfNetQTRVhKi1zsOtsLfkxx5vboXXb6aD.jpg?quality=95&crop=316,429,1036,1036&as=50x50,100x100,200x200,400x400&ava=1&u=WufiXWhllfVsDbgdq7ivFRImaN-1GHzdkTMQSqBggts&cs=200x200"} />
@@ -141,7 +149,7 @@ class TopStudent extends React.Component {
                             4
                         </div>
                         <div className="Avatar__photo">
-                            <Avatar size={48} src={"https://sun136-2.userapi.com/s/v1/if2/iHLm-c1vgn-oIuOd8B18a-YCOmwwY4tTc3TnmzhZzRRcLqxg0Mj9WeoXHCJsb_GvzI_VzO7auRVbQankdXI0GeSV.jpg?quality=95&crop=0,229,2331,2331&as=50x50,100x100,200x200,400x400&ava=1&u=J_sb3fb-HpYzGIgonZQ7uwOwEC9bBzSKKwfudo_Ix1U&cs=200x200"} />
+                            <Avatar size={48} src={"https://sun9-37.userapi.com/impg/41_Zjmq2JUJoyM2xdtUImjYOm7BQ0pjUAH6_BQ/hwaPbEdLOWc.jpg?size=1620x2160&quality=95&sign=1e5502095bf31bb36e15ca5bad2fb7d3&type=album&cs=200x200"} />
                         </div>
                     </div>
                 }
@@ -195,7 +203,7 @@ class TopStudent extends React.Component {
                             7
                         </div>
                         <div className="Avatar__photo">
-                            <Avatar size={48} src={"https://sun9-29.userapi.com/sun9-54/impg/VCXeDshShuvV-qXIMSmyeejaYMrv4Mil2BcHEQ/bDs0Nu0vFnE.jpg?size=1622x2160&quality=96&sign=c0562c92699542aaf0f8aaac37ab16ff&type=album&cs=200x200"} />
+                            <Avatar size={48} src={"https://sun9-27.userapi.com/impg/Wk6NhnhRvpvIbBhungpBssOgYMrdBdXXU7ijQQ/RLS8uhij8iA.jpg?size=960x1280&quality=95&sign=03159989fea138b4baf611d3b06e15e9&type=album&cs=200x200"} />
                         </div>
                     </div>
                 }
@@ -250,6 +258,9 @@ class TopStudent extends React.Component {
                         </div>
                         <div className="Avatar__photo">
                             <Avatar size={48} src={"https://pp.userapi.com/nKpB1Qq39oLk0_S8_C9PolGFFUpM5n8FnzKC7A/ucP1cjlkpZk.png"} />
+                            <div className="Avatar__indicator" >
+                                <Icon20GiftCircleFillYellow style={numericIndicator} />
+                            </div>
                         </div>
                     </div>
                 }

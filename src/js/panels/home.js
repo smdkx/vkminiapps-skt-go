@@ -58,6 +58,7 @@ import {
     }}
 />}
 
+/*
 {this.state.BannerWelcomeStatus && <Banner
     mode="image"
     size="m"
@@ -131,7 +132,7 @@ class Home extends React.Component {
                             }}
                         />
                         }
-                    //asideMode="dismiss"
+                    asideMode="dismiss"
                     onDismiss={() => {
                         this.setState({
                             BannerUpdateStatus: false

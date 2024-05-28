@@ -122,7 +122,6 @@ import Placeholder_page from './js/panels/placeholder_page';
 
 //Тестовые фичи
 
-
 class App extends React.Component {
     constructor(props) {
         super(props);

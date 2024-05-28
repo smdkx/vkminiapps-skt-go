@@ -71,7 +71,7 @@ class Random extends React.Component {
                         <Button size="l" stretched mode="secondary" onClick={this.random}>
                             Погнали!
                         </Button>
-                        <Footer>Общее количество мемов: более 200 шт. Они могут повторяться.</Footer>
+                        <Footer>Общее количество мемов: более 200 шт. Присутствует шанс их повторения.</Footer>
                     </Div>
                 </Group>
                 )}

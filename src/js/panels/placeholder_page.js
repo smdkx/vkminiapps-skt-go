@@ -46,7 +46,7 @@ class PlaceholderPage extends React.Component {
                 <Group>
                 <img className="plug" src={img_plug} alt="img_plug" />
                     <Placeholder
-                    //header="Практики нет"
+                    header="Oops"
                     >
                         Приложение SKT Go прекратило свою поддержку.
                     </Placeholder>
