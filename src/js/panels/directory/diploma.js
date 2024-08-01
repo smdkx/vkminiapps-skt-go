@@ -29,8 +29,9 @@ class Diploma extends React.Component {
             snackbar: null,
             loader: false,
             images: [
-                "https://i.postimg.cc/CMrhdjqW/diplomspo.jpg",
-                "https://i.postimg.cc/7YCxzf1b/diplomspoprolozhenie.jpg",
+                "http://collegetel.ru/new_site/images/blocks/1716816191.jpg",
+                "http://collegetel.ru/new_site/images/blocks/1716816190.jpg",
+                "http://collegetel.ru/new_site/images/blocks/1716816189.jpg",
             ],
         };
     }
@@ -41,7 +42,7 @@ class Diploma extends React.Component {
         return (
             <Panel id={id}>
                 <PanelHeader
-                    left={<PanelHeaderBack onClick={() => goBack()}/>}
+                    before={<PanelHeaderBack onClick={() => goBack()}/>}
                 >
                     Образцы дипломов
                 </PanelHeader>
@@ -49,7 +50,7 @@ class Diploma extends React.Component {
                 <Group header={<Header mode="secondary">Образцы дипломов</Header>}> 
                     <CardScroll size="l" style={{ marginBottom: "-50px" }}>
                         <ContentCard
-                            image={this.state.images[0]}
+                            src={this.state.images[0]}
                             header="Образец диплома №1"
                             onClick={() => bridge.send("VKWebAppShowImages", { images: [this.state.images[0]] })}
                             caption={null}
@@ -58,9 +59,18 @@ class Diploma extends React.Component {
                         />
 
                         <ContentCard
-                            image={this.state.images[1]}
+                            src={this.state.images[1]}
                             header="Образец диплома №2"
                             onClick={() => bridge.send("VKWebAppShowImages", { images: [this.state.images[1]] })}
+                            caption={null}
+                            maxHeight={200}
+                            style={{ marginBottom: "50px" }}
+                        />
+
+                        <ContentCard
+                            src={this.state.images[2]}
+                            header="Образец диплома №3"
+                            onClick={() => bridge.send("VKWebAppShowImages", { images: [this.state.images[2]] })}
                             caption={null}
                             maxHeight={200}
                             style={{ marginBottom: "50px" }}

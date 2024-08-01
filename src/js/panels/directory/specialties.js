@@ -35,7 +35,7 @@ class Specialties extends React.Component {
         return (
             <Panel id={id}>
                 <PanelHeader
-                    left={<PanelHeaderBack onClick={() => goBack()}/>}
+                    before={<PanelHeaderBack onClick={() => goBack()}/>}
                 >
                     Специальности
                 </PanelHeader>

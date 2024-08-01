@@ -18,8 +18,6 @@ import {
     Icon24Cancel
 } from '@vkontakte/icons';
 
-import queryString from 'query-string';
-
 class InfoTopModal extends React.Component {
 
     constructor(props) {
@@ -31,13 +29,6 @@ class InfoTopModal extends React.Component {
 
     }
 
-    componentDidMount() {
-        var params = queryString.parse(window.location.search);
-        this.setState({
-            device: params.vk_platform
-        });
-    }
-
     render() {
         const {id, onClose, platform} = this.props;
 
@@ -46,10 +37,15 @@ class InfoTopModal extends React.Component {
                 id={id}
                 header={
                     <ModalPageHeader
-                        left={platform !== IOS &&
-                        <PanelHeaderButton onClick={onClose}><Icon24Cancel/></PanelHeaderButton>}
-                        right={platform === IOS &&
-                        <PanelHeaderButton onClick={onClose}><Icon24Dismiss/></PanelHeaderButton>}
+                        before={platform !== IOS &&
+                            <PanelHeaderButton onClick={onClose}>
+                                <Icon24Cancel/>
+                            </PanelHeaderButton>}
+
+                        after={platform === IOS &&
+                            <PanelHeaderButton onClick={onClose}>
+                                <Icon24Dismiss/>
+                            </PanelHeaderButton>}
                     >
                         Информация о топе
                     </ModalPageHeader>
@@ -64,7 +60,6 @@ class InfoTopModal extends React.Component {
                     <Group>
                         <Card style={{ marginBottom: "10px"}}>
                             <ContentCard
-                            disabled
                             className="tw"
                             header="Как формируется топ?"
                             text= {
@@ -76,7 +71,6 @@ class InfoTopModal extends React.Component {
 
                         <Card style={{ marginBottom: "10px"}}>
                             <ContentCard
-                            disabled
                             className="tw"
                             header="Кто сюда попадает?"
                             text= {
@@ -88,7 +82,6 @@ class InfoTopModal extends React.Component {
 
                         <Card style={{ marginBottom: "10px"}}>
                             <ContentCard
-                            disabled
                             className="tw"
                             header="Что за иконка у аватарки пользователя?"
                             text= {
@@ -100,7 +93,6 @@ class InfoTopModal extends React.Component {
 
                         <Card style={{ marginBottom: "10px"}}>
                             <ContentCard
-                            disabled
                             className="tw"
                             header="Возможно ли попасть в топ?"
                             text= {

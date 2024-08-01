@@ -23,8 +23,6 @@ import {
     Icon20FireCircleFillRed
 } from '@vkontakte/icons';
 
-import queryString from 'query-string';
-
 const numericIndicator = {
     height: 20,
     width: 20,
@@ -46,13 +44,6 @@ class InfoDevModal extends React.Component {
 
     }
 
-    componentDidMount() {
-        var params = queryString.parse(window.location.search);
-        this.setState({
-            device: params.vk_platform
-        });
-    }
-
     render() {
         const {id, onClose, platform} = this.props;
 
@@ -61,10 +52,15 @@ class InfoDevModal extends React.Component {
                 id={id}
                 header={
                     <ModalPageHeader
-                        left={platform !== IOS &&
-                        <PanelHeaderButton onClick={onClose}><Icon24Cancel/></PanelHeaderButton>}
-                        right={platform === IOS &&
-                        <PanelHeaderButton onClick={onClose}><Icon24Dismiss/></PanelHeaderButton>}
+                        before={platform !== IOS &&
+                            <PanelHeaderButton onClick={onClose}>
+                                <Icon24Cancel/>
+                            </PanelHeaderButton>}
+
+                        after={platform === IOS &&
+                            <PanelHeaderButton onClick={onClose}>
+                                <Icon24Dismiss/>
+                            </PanelHeaderButton>}
                     >
                         Разработчики
                     </ModalPageHeader>
@@ -80,7 +76,7 @@ class InfoDevModal extends React.Component {
                         <Card size="l" mode="shadow">
                             <SimpleCell
                             expandable = 'true' 
-                            description="Grand developer / Creator"
+                            subtitle="Grand developer / Creator"
                             href="https://vk.com/id214477552" target="_blank"
                             before={
                             <div className="Avatar__photo">

@@ -37,7 +37,7 @@ class Commission extends React.Component {
         return (
             <Panel id={id}>
                 <PanelHeader
-                    left={<PanelHeaderBack onClick={() => goBack()}/>}
+                    before={<PanelHeaderBack onClick={() => goBack()}/>}
                 >
                     Приемная комиссия
                 </PanelHeader>

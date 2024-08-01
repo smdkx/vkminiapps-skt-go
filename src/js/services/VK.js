@@ -1,4 +1,4 @@
-import VKConnect from "@vkontakte/vk-connect";
+import VKConnect from "@vkontakte/vk-bridge";
 
 import {store} from "../../index";
 

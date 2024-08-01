@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 
 import {setPage, openModal} from "../store/router/actions";
 
-import { __version } from '../components/data/profile.data';
+import { appVersion } from '../components/data/profile.data';
 
 import bridge from '@vkontakte/vk-bridge';
 
@@ -130,7 +130,7 @@ class Profile extends React.Component {
         return (
             <Panel id={id}>
                 <PanelHeader
-                left={
+                before={
                     <PanelHeaderButton onClick={() => setPage('profile', 'settings')}>
                         <Icon28SettingsOutline />
                     </PanelHeaderButton>
@@ -149,7 +149,7 @@ class Profile extends React.Component {
                         padding: 15,
                     }}>
                         <Avatar size={96} src={avatar_profile} />
-                        <Title style={{ marginBottom: 8, marginTop: 15 }} level="2" weight="medium">{first_name} {last_name}</Title>
+                        <Title style={{ marginBottom: 8, marginTop: 15 }} level="2" weight="3">{first_name} {last_name}</Title>
                         <Text style={{ marginBottom: 20, color: 'var(--text_secondary)' }}>{sex === 1 ? "Студентка" : "Студент"}</Text>
                         <Button size="m" mode="secondary" onClick={() => setPage('profile', 'donate')}>Подробнее о VK Donut</Button>
                     </Gradient> }
@@ -169,7 +169,7 @@ class Profile extends React.Component {
                             <SimpleCell
                             disabled
                             before={<Icon28EducationOutline/>} 
-                            description='СКТ (ф) СПбГУТ'
+                            subtitle='СКТ (ф) СПбГУТ'
                             >
                                 Место учебы
                             </SimpleCell>
@@ -177,7 +177,7 @@ class Profile extends React.Component {
                             <SimpleCell
                             disabled
                             before={<Icon28Users3Outline/>} 
-                            description='Не указано'
+                            subtitle='Не указано'
                             >
                                 Факультет
                             </SimpleCell>
@@ -185,7 +185,7 @@ class Profile extends React.Component {
                             <SimpleCell
                             disabled
                             before={<Icon28UsersOutline/>} 
-                            description='Не указано'
+                            subtitle='Не указано'
                             >
                                 Группа
                             </SimpleCell>
@@ -198,7 +198,7 @@ class Profile extends React.Component {
                         <Card size="l" mode="shadow">
                             <SimpleCell
                             before={<Icon28FavoriteOutline/>} 
-                            description='Добавляет сервис в избранные приложения'
+                            subtitle='Добавляет сервис в избранные приложения'
                             onClick={this.AddToFavorites}
                             >
                                 Добавить в избранное
@@ -206,7 +206,7 @@ class Profile extends React.Component {
 
                             <SimpleCell 
                             before={<Icon28ShareOutline/>} 
-                            description='Поделитесь с друзьями нашим приложением'
+                            subtitle='Поделитесь с друзьями нашим приложением'
                             onClick={() => bridge.send("VKWebAppShare", {"link": "https://vk.com/app7469712"})}
                             //onClick={() =>  bridge.send("VKWebAppShowWallPostBox", {"message": "Я использую SKT APP, а ты?"})}
                             >
@@ -221,7 +221,7 @@ class Profile extends React.Component {
                         <Card size="l" mode="shadow">
                             <SimpleCell
                             before={<Icon28EmployeeOutline/>} 
-                            description='Показать всех разработчиков'
+                            subtitle='Показать всех разработчиков'
                             onClick={() => this.props.openModal('MODAL_PAGE_DEV_INFO')}
                             >
                                 Разработчики
@@ -230,7 +230,7 @@ class Profile extends React.Component {
                             <SimpleCell
                             disabled
                             before={<Icon28ServicesOutline/>} 
-                            description={__version}
+                            subtitle={appVersion}
                             >
                                 Версия приложения
                             </SimpleCell>

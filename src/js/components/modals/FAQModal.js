@@ -18,8 +18,6 @@ import {
     Icon24Cancel
 } from '@vkontakte/icons';
 
-import queryString from 'query-string';
-
 class TopInfoModal extends React.Component {
 
     constructor(props) {
@@ -31,13 +29,6 @@ class TopInfoModal extends React.Component {
 
     }
 
-    componentDidMount() {
-        var params = queryString.parse(window.location.search);
-        this.setState({
-            device: params.vk_platform
-        });
-    }
-
     render() {
         const {id, onClose, platform} = this.props;
 
@@ -46,10 +37,15 @@ class TopInfoModal extends React.Component {
                 id={id}
                 header={
                     <ModalPageHeader
-                        left={platform !== IOS &&
-                        <PanelHeaderButton onClick={onClose}><Icon24Cancel/></PanelHeaderButton>}
-                        right={platform === IOS &&
-                        <PanelHeaderButton onClick={onClose}><Icon24Dismiss/></PanelHeaderButton>}
+                        before={platform !== IOS &&
+                            <PanelHeaderButton onClick={onClose}>
+                                <Icon24Cancel/>
+                            </PanelHeaderButton>}
+                        
+                        after={platform === IOS &&
+                            <PanelHeaderButton onClick={onClose}>
+                                <Icon24Dismiss/>
+                            </PanelHeaderButton>}
                     >
                         Справка
                     </ModalPageHeader>
@@ -64,7 +60,6 @@ class TopInfoModal extends React.Component {
                     <Group>
                         <Card style={{ marginBottom: "10px"}}>
                             <ContentCard
-                            disabled
                             className="tw"
                             header="Информация о сервисе"
                             text= {

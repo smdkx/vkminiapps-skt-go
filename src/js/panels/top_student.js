@@ -50,7 +50,7 @@ class TopStudent extends React.Component {
             <Panel id={id}>
                 <PanelHeader
                     style={{paddingBottom: 5}}
-                    left={
+                    before={
                         <React.Fragment>
                           <PanelHeaderBack onClick={() => goBack()}/>
                           <PanelHeaderButton><Icon28HelpCircleOutline onClick={() => this.props.openModal('MODAL_PAGE_TOP_INFO')} /></PanelHeaderButton>
@@ -62,7 +62,7 @@ class TopStudent extends React.Component {
                 
                 <SimpleCell
                 expandable = 'true'
-                description="Гений разработки и дизайна"
+                subtitle="Гений разработки и дизайна"
                 href="https://vk.com/id214477552" target="_blank"
                 before={
                     <div className="GlobalPlace__container">
@@ -99,7 +99,7 @@ class TopStudent extends React.Component {
 
                 <SimpleCell
                 expandable = 'true'
-                description="Отец русских мемов"
+                subtitle="Отец русских мемов"
                 href="https://vk.com/id167786810" target="_blank"
                 before={
                     <div className="GlobalPlace__container">
@@ -120,7 +120,7 @@ class TopStudent extends React.Component {
 
                 <SimpleCell
                 expandable = 'true'
-                description="Пожизненный фармер V4"
+                subtitle="Пожизненный фармер V4"
                 href="https://vk.com/id142033810" target="_blank"
                 before={
                     <div className="GlobalPlace__container" >
@@ -141,7 +141,7 @@ class TopStudent extends React.Component {
 
                 <SimpleCell
                 expandable = 'true'
-                description="Главный спортик на районе"
+                subtitle="Главный спортик на районе"
                 href="https://vk.com/id535529459" target="_blank"
                 before={
                     <div className="GlobalPlace__container" >
@@ -159,7 +159,7 @@ class TopStudent extends React.Component {
 
                 <SimpleCell
                 expandable = 'true'
-                description="Ответственный за холодильник"
+                subtitle="Ответственный за холодильник"
                 href="https://vk.com/id370154348" target="_blank"
                 before={
                     <div className="GlobalPlace__container" >
@@ -177,7 +177,7 @@ class TopStudent extends React.Component {
 
                 <SimpleCell
                 expandable = 'true'
-                description="Спортик XXL"
+                subtitle="Спортик XXL"
                 href="https://vk.com/id234042829" target="_blank"
                 before={
                     <div className="GlobalPlace__container" >
@@ -195,7 +195,7 @@ class TopStudent extends React.Component {
 
                 <SimpleCell
                 expandable = 'true'
-                description="Ответственный за сервер"
+                subtitle="Ответственный за сервер"
                 href="https://vk.com/id166167463" target="_blank"
                 before={
                     <div className="GlobalPlace__container" >
@@ -213,7 +213,7 @@ class TopStudent extends React.Component {
 
                 <SimpleCell
                 expandable = 'true'
-                description="Работник года"
+                subtitle="Работник года"
                 href="https://vk.com/id186241000" target="_blank"
                 before={
                     <div className="GlobalPlace__container" >
@@ -231,7 +231,7 @@ class TopStudent extends React.Component {
 
                 <SimpleCell
                 expandable = 'true'
-                description="Темные очки (тартар)"
+                subtitle="Темные очки (тартар)"
                 href="https://vk.com/id181256924" target="_blank"
                 before={
                     <div className="GlobalPlace__container" >
@@ -249,7 +249,7 @@ class TopStudent extends React.Component {
 
                 <SimpleCell
                 expandable = 'true'
-                description="Тут может быть твое имя"
+                subtitle="Тут может быть твое имя"
                 onClick={() => this.props.openModal('MODAL_PAGE_TOP_INFO')}
                 before={
                     <div className="GlobalPlace__container" >

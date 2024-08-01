@@ -30,7 +30,7 @@ class Feedback extends React.Component {
         return (
             <Panel id={id}>
                 <PanelHeader
-                    left={<PanelHeaderBack onClick={() => goBack()}/>}
+                    before={<PanelHeaderBack onClick={() => goBack()}/>}
                 >
                     Отзыв о приложении
                 </PanelHeader>
@@ -47,7 +47,6 @@ class Feedback extends React.Component {
 
                 <CardGrid size="l" style={{ marginTop: "10px", marginBottom: "30px"}}>
                     <ContentCard
-                    disabled
                     className="tw"
                     header="Оставьте ваш отзыв о приложении"
                     text= {

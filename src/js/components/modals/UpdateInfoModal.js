@@ -31,8 +31,6 @@ import {
 
 import Memoji from "../../../img/memoji.png";
 
-import queryString from 'query-string';
-
 class UpdateInfoModal extends React.Component {
 
     constructor(props) {
@@ -44,13 +42,6 @@ class UpdateInfoModal extends React.Component {
 
     }
 
-    componentDidMount() {
-        var params = queryString.parse(window.location.search);
-        this.setState({
-            device: params.vk_platform
-        });
-    }
-
     render() {
         const {id, onClose, platform} = this.props;
 
@@ -59,10 +50,15 @@ class UpdateInfoModal extends React.Component {
                 id={id}
                 header={
                     <ModalPageHeader
-                        left={platform !== IOS &&
-                        <PanelHeaderButton onClick={onClose}><Icon24Cancel/></PanelHeaderButton>}
-                        right={platform === IOS &&
-                        <PanelHeaderButton onClick={onClose}><Icon24Dismiss/></PanelHeaderButton>}
+                        before={platform !== IOS &&
+                            <PanelHeaderButton onClick={onClose}>
+                                <Icon24Cancel/>
+                            </PanelHeaderButton>}
+                        
+                        after={platform === IOS &&
+                            <PanelHeaderButton onClick={onClose}>
+                                <Icon24Dismiss/>
+                            </PanelHeaderButton>}
                     >
                         
                     </ModalPageHeader>
@@ -84,7 +80,7 @@ class UpdateInfoModal extends React.Component {
                         <Card>
                             <SimpleCell
                             disabled
-                            description="Такой классный и воздушный"
+                            subtitle="Такой классный и воздушный"
                             before={<Icon28PaintRollerOutline/>} 
                             >
                                 Обновленный дизайн
@@ -94,7 +90,7 @@ class UpdateInfoModal extends React.Component {
                         <Card style={{ marginTop: "10px", marginBottom: "10px"}}>
                             <SimpleCell
                             disabled
-                            description="Их много не бывает"
+                            subtitle="Их много не бывает"
                             before={<Icon28SmileOutline/>} 
                             >
                                 Еще больше мемов
@@ -104,7 +100,7 @@ class UpdateInfoModal extends React.Component {
                         <Card style={{ marginTop: "10px", marginBottom: "10px"}}>
                             <SimpleCell
                             disabled
-                            description="Стал еще удобнее чем было"
+                            subtitle="Стал еще удобнее чем было"
                             before={<Icon28CalendarOutline/>} 
                             >
                                 Улучшенный вид расписания
@@ -114,7 +110,7 @@ class UpdateInfoModal extends React.Component {
                         <Card style={{ marginTop: "10px", marginBottom: "10px"}}>
                             <SimpleCell
                             disabled
-                            description="С полезной информацией внутри"
+                            subtitle="С полезной информацией внутри"
                             before={<Icon28BookOutline/>} 
                             >
                                 Удобный справочник
@@ -124,7 +120,7 @@ class UpdateInfoModal extends React.Component {
                         <Card style={{ marginTop: "10px", marginBottom: "10px"}}>
                             <SimpleCell
                             disabled
-                            description="Открывающие новые настройки"
+                            subtitle="Открывающие новые настройки"
                             before={<Icon28DonateOutline/>} 
                             >
                                 Премиум возможности
@@ -134,7 +130,7 @@ class UpdateInfoModal extends React.Component {
                         <Card style={{ marginTop: "10px", marginBottom: "10px"}}>
                             <SimpleCell
                             disabled
-                            description="Покоряй вершины уже сейчас"
+                            subtitle="Покоряй вершины уже сейчас"
                             before={<Icon28UserStarBadgeOutline/>} 
                             >
                                 Топ студентов
@@ -144,7 +140,7 @@ class UpdateInfoModal extends React.Component {
                         <Card style={{ marginTop: "10px", marginBottom: "10px"}}>
                             <SimpleCell
                             disabled
-                            description="Внутри приложения"
+                            subtitle="Внутри приложения"
                             before={<Icon28VideoOutline/>} 
                             >
                                 Отказались от рекламы
@@ -154,7 +150,7 @@ class UpdateInfoModal extends React.Component {
                         <Card style={{ marginTop: "10px", marginBottom: "10px"}}>
                             <SimpleCell
                             disabled
-                            description="И делитесь с друзьями"
+                            subtitle="И делитесь с друзьями"
                             before={<Icon28SparkleOutline/>} 
                             >
                                 Получайте достижения
@@ -164,7 +160,7 @@ class UpdateInfoModal extends React.Component {
                         <Card style={{ marginTop: "10px", marginBottom: "10px"}}>
                             <SimpleCell
                             disabled
-                            description="Загляните на вкладку «Сервисы»"
+                            subtitle="Загляните на вкладку «Сервисы»"
                             before={<Icon28FireOutline/>} 
                             >
                                 Обновленные разделы
@@ -174,7 +170,7 @@ class UpdateInfoModal extends React.Component {
                         <Card style={{ marginTop: "10px", marginBottom: "10px"}}>
                             <SimpleCell
                             disabled
-                            description="С каждым обновлением их все меньше"
+                            subtitle="С каждым обновлением их все меньше"
                             before={<Icon28BugOutline/>} 
                             >
                                 Исправление ошибок

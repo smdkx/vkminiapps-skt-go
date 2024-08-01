@@ -22,7 +22,6 @@ import {
     Icon28SchoolOutline,
     Icon28Users3Outline,
     Icon28TearOffFlyerOutline,
-    Icon28DonateOutline,
     Icon28Cards2Outline
 } from '@vkontakte/icons';
 
@@ -43,7 +42,7 @@ class Directory extends React.Component {
         return (
             <Panel id={id}>
                 <PanelHeader
-                    left={<PanelHeaderBack onClick={() => goBack()}/>}
+                    before={<PanelHeaderBack onClick={() => goBack()}/>}
                 >
                     Справочник
                 </PanelHeader>
@@ -110,14 +109,6 @@ class Directory extends React.Component {
                             href='http://www.collegetel.ru/sveden/employees' target="_blank"
                             >
                                 Педагогический состав
-                            </SimpleCell>
-
-                            <SimpleCell 
-                            expandable = 'true' 
-                            before={<Icon28DonateOutline/>} 
-                            href='http://www.collegetel.ru/component/content/category/14-nashi-dostizheniya' target="_blank"
-                            >
-                                Достижения колледжа
                             </SimpleCell>
 
                             <SimpleCell 

@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
-import { __news } from '../components/data/news.data'
+import { newsData } from '../components/data/news.data'
 
 import {setPage} from "../store/router/actions";
 
@@ -39,7 +39,7 @@ class News extends React.Component {
 
             <Panel id={id}>
                 <PanelHeader
-                left={
+                before={
                     <PanelHeaderButton href='https://vk.com/sktnews' target="_blank">
                         <Icon28TextLiveOutline />
                     </PanelHeaderButton>
@@ -49,14 +49,13 @@ class News extends React.Component {
                 </PanelHeader>
 
                 <Group>
-                    {__news.length ? __news.toReversed().map(__news => (
-                    <Div key={__news.id}>
+                    {newsData.length ? newsData.toReversed().map(newsData => (
+                    <Div key={newsData.id}>
                         <ContentCard
-                        image={__news.image}
+                        src={newsData.image}
                         subtitle="Системная запись"
-                        text={__news.text}
-                        caption={__news.date}
-                        disabled
+                        text={newsData.text}
+                        caption={newsData.date}
                         maxHeight={100}
                         />
                     </Div>

@@ -107,7 +107,7 @@ class Home extends React.Component {
         return (
             <Panel id={id}>
                 <PanelHeader
-                left={
+                before={
                     <PanelHeaderButton onClick={() => this.props.openModal('MODAL_PAGE_FAQ')}>
                         <Icon28InfoOutline />
                     </PanelHeaderButton>
@@ -154,7 +154,7 @@ class Home extends React.Component {
                             </div>
                             <div className="CustomBanner__main">
                                 <div className="CustomBanner__header">Системное сообщение</div>
-                                <div className="CustomBanner__subheader">Приложение прекратило свою поддержку, обновления больше выходить не будут. Актуальность информации в приложении сохраняется на 2022 год.</div>
+                                <div className="CustomBanner__subheader">Приложение временно прекратило свою поддержку. Актуальность информации сохраняется на 2024 год.</div>
                             </div>
                         </div>
                     </Card>
@@ -240,7 +240,7 @@ class Home extends React.Component {
                         <Card size="l" mode="shadow">
                             <SimpleCell
                             expandable = 'true'
-                            description='teamskt'
+                            subtitle='teamskt'
                             before={<Icon28LogoVkOutline/>} 
                             href='https://vk.com/teamskt' target="_blank"
                             >
@@ -249,7 +249,7 @@ class Home extends React.Component {
 
                             <SimpleCell
                             expandable = 'true'
-                            description='skt_club'
+                            subtitle='skt_club'
                             before={<Icon28LogoVkOutline/>} 
                             href='https://vk.com/skt_club' target="_blank"
                             >
@@ -258,7 +258,7 @@ class Home extends React.Component {
 
                             <SimpleCell
                             expandable = 'true'
-                            description='collegetelsml'
+                            subtitle='collegetelsml'
                             before={<Icon28LogoVkOutline/>} 
                             href='https://vk.com/collegetelsml' target="_blank"
                             >
@@ -267,7 +267,7 @@ class Home extends React.Component {
 
                             <SimpleCell
                             expandable = 'true'
-                            description='sktnews'
+                            subtitle='sktnews'
                             before={<Icon28LogoVkOutline/>} 
                             href='https://vk.com/sktnews' target="_blank"
                             >
@@ -282,7 +282,7 @@ class Home extends React.Component {
                         <Card size="l" mode="shadow">
                             <SimpleCell
                             expandable = 'true'
-                            description='collegetel.ru'
+                            subtitle='collegetel.ru'
                             before={<Icon28LinkCircleOutline/>}
                             href='http://www.collegetel.ru/' target="_blank"
                             >
@@ -291,7 +291,7 @@ class Home extends React.Component {
 
                             <SimpleCell 
                             expandable = 'true'
-                            description='lk.sut.ru'
+                            subtitle='lk.sut.ru'
                             before={<Icon28LinkCircleOutline/>}
                             href='https://lk.sut.ru/cabinet/' target="_blank"
                             >

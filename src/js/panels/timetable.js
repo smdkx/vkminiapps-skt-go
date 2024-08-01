@@ -35,7 +35,7 @@ class Timetable extends React.Component {
         return (
             <Panel id={id}>
                 <PanelHeader
-                    left={<PanelHeaderBack onClick={() => goBack()}/>}
+                    before={<PanelHeaderBack onClick={() => goBack()}/>}
                 >
                     Расписание занятий
                 </PanelHeader>
@@ -55,7 +55,7 @@ class Timetable extends React.Component {
                         <Card size="l" mode="shadow">
                             <SimpleCell
                             before={<Icon28UsersOutline/>} 
-                            description="СП9121, ИКСС9221, ИКСС9321"
+                            subtitle="СП9121, ИКСС9221, ИКСС9321"
                             onClick={() => setPage('home', 'group_1')}
                             >
                                 Учебное расписание групп
@@ -63,7 +63,7 @@ class Timetable extends React.Component {
 
                             <SimpleCell
                             before={<Icon28UsersOutline/>} 
-                            description="ИКСС9421, ССА9521, ИСП9621"
+                            subtitle="ИКСС9421, ССА9521, ИСП9621"
                             onClick={() => setPage('home', 'group_2')}
                             >
                                 Учебное расписание групп
@@ -71,7 +71,7 @@ class Timetable extends React.Component {
 
                             <SimpleCell
                             before={<Icon28UsersOutline/>} 
-                            description="ИСП9721, ИСП9921"
+                            subtitle="ИСП9721, ИСП9921"
                             onClick={() => setPage('home', 'group_3')}
                             >
                                 Учебное расписание групп
@@ -79,7 +79,7 @@ class Timetable extends React.Component {
 
                             <SimpleCell
                             before={<Icon28UsersOutline/>} 
-                            description="С9120, М9220, СП9420"
+                            subtitle="С9120, М9220, СП9420"
                             onClick={() => setPage('home', 'group_4')}
                             >
                                 Учебное расписание групп
@@ -87,7 +87,7 @@ class Timetable extends React.Component {
 
                             <SimpleCell
                             before={<Icon28UsersOutline/>} 
-                            description="КС9520"
+                            subtitle="КС9520"
                             onClick={() => setPage('home', 'group_5')}
                             >
                                 Учебное расписание групп
@@ -95,7 +95,7 @@ class Timetable extends React.Component {
 
                             <SimpleCell
                             before={<Icon28UsersOutline/>} 
-                            description="ПКС9620"
+                            subtitle="ПКС9620"
                             onClick={() => setPage('home', 'group_6')}
                             >
                                 Учебное расписание групп
@@ -103,7 +103,7 @@ class Timetable extends React.Component {
 
                             <SimpleCell
                             before={<Icon28UsersOutline/>} 
-                            description="ПКС9720"
+                            subtitle="ПКС9720"
                             onClick={() => setPage('home', 'group_7')}
                             >
                                 Учебное расписание групп
@@ -111,7 +111,7 @@ class Timetable extends React.Component {
 
                             <SimpleCell
                             before={<Icon28UsersOutline/>} 
-                            description="КС9419"
+                            subtitle="КС9419"
                             onClick={() => setPage('home', 'group_8')}
                             >
                                 Учебное расписание групп
@@ -119,7 +119,7 @@ class Timetable extends React.Component {
 
                             <SimpleCell
                             before={<Icon28UsersOutline/>} 
-                            description="ПКС9718, ПКС9818, ПКС11819, ПКС11919 "
+                            subtitle="ПКС9718, ПКС9818, ПКС11819, ПКС11919 "
                             onClick={() => setPage('home', 'group_9')}
                             >
                                 Учебное расписание групп
@@ -127,7 +127,7 @@ class Timetable extends React.Component {
 
                             <SimpleCell
                             before={<Icon28UsersOutline/>} 
-                            description="ПКС9619, ПКС9719"
+                            subtitle="ПКС9619, ПКС9719"
                             onClick={() => setPage('home', 'group_10')}
                             >
                                 Учебное расписание групп
@@ -135,7 +135,7 @@ class Timetable extends React.Component {
 
                             <SimpleCell
                             before={<Icon28UsersOutline/>} 
-                            description="КС11519, КС9518"
+                            subtitle="КС11519, КС9518"
                             onClick={() => setPage('home', 'group_11')}
                             >
                                 Учебное расписание групп

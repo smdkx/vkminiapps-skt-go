@@ -7,6 +7,7 @@ import * as VK from './js/services/VK';
 import bridge from '@vkontakte/vk-bridge'
 
 import {
+    AppRoot,
     Epic, 
     View, 
     Root, 
@@ -205,148 +206,150 @@ class App extends React.Component {
 
         return (
             <ConfigProvider isWebView={true} scheme={colorScheme}>
-                <Epic activeStory={activeStory} tabbar={
-                    <Tabbar>
-                        <TabbarItem //Первый таб
-                            onClick={() => setStory('home', 'home_tab')}
-                            selected={activeStory === 'home'}
-                            text="Главная"
-                        ><Icon28HomeOutline/></TabbarItem>
+                <AppRoot>
+                    <Epic activeStory={activeStory} tabbar={
+                        <Tabbar>
+                            <TabbarItem //Первый таб
+                                onClick={() => setStory('home', 'home_tab')}
+                                selected={activeStory === 'home'}
+                                text="Главная"
+                            ><Icon28HomeOutline/></TabbarItem>
 
-                        <TabbarItem //Второй таб
-                            onClick={() => setStory('news', 'news_tab')}
-                            selected={activeStory === 'news'}
-                            text="Новости"
-                        ><Icon28ArticleOutline/></TabbarItem>
+                            <TabbarItem //Второй таб
+                                onClick={() => setStory('news', 'news_tab')}
+                                selected={activeStory === 'news'}
+                                text="Новости"
+                            ><Icon28ArticleOutline/></TabbarItem>
 
-                        <TabbarItem //Третий таб
-                            onClick={() => setStory('service', 'service_tab')}
-                            selected={activeStory === 'service'}
-                            text="Сервисы"
-                        ><Icon28ServicesOutline/></TabbarItem>
+                            <TabbarItem //Третий таб
+                                onClick={() => setStory('service', 'service_tab')}
+                                selected={activeStory === 'service'}
+                                text="Сервисы"
+                            ><Icon28ServicesOutline/></TabbarItem>
 
-                        <TabbarItem //Четвертый таб
-                            onClick={() => setStory('profile', 'profile_tab')}
-                            selected={activeStory === 'profile'}
-                            text="Профиль"
-                        ><Icon28UserCircleOutline/></TabbarItem>
-                    </Tabbar>
-                }>
-                    <Root id="home" activeView={activeView} popout={popout}>
-                        <View
-                            id="home"
-                            modal={homeModals}
-                            activePanel={getActivePanel("home")}
-                            history={history}
-                            onSwipeBack={() => goBack()}
-                        >
-                            <Home id="home_tab"/>
+                            <TabbarItem //Четвертый таб
+                                onClick={() => setStory('profile', 'profile_tab')}
+                                selected={activeStory === 'profile'}
+                                text="Профиль"
+                            ><Icon28UserCircleOutline/></TabbarItem>
+                        </Tabbar>
+                    }>
+                        <Root id="home" activeView={activeView} popout={popout}>
+                            <View
+                                id="home"
+                                modal={homeModals}
+                                activePanel={getActivePanel("home")}
+                                history={history}
+                                onSwipeBack={() => goBack()}
+                            >
+                                <Home id="home_tab"/>
 
-                            <Feedback id="feedback"/>
+                                <Feedback id="feedback"/>
 
-                            <TOP_Student id="top_student"/>
+                                <TOP_Student id="top_student"/>
 
-                            <Timetable id="timetable"/>
-                            <Timetable_Group_1 id="group_1"/>
-                            <Timetable_Group_2 id="group_2"/>
-                            <Timetable_Group_3 id="group_3"/>
-                            <Timetable_Group_4 id="group_4"/>
-                            <Timetable_Group_5 id="group_5"/>
-                            <Timetable_Group_6 id="group_6"/>
-                            <Timetable_Group_7 id="group_7"/>
-                            <Timetable_Group_8 id="group_8"/>
-                            <Timetable_Group_9 id="group_9"/>
-                            <Timetable_Group_10 id="group_10"/>
-                            <Timetable_Group_11 id="group_11"/>
+                                <Timetable id="timetable"/>
+                                <Timetable_Group_1 id="group_1"/>
+                                <Timetable_Group_2 id="group_2"/>
+                                <Timetable_Group_3 id="group_3"/>
+                                <Timetable_Group_4 id="group_4"/>
+                                <Timetable_Group_5 id="group_5"/>
+                                <Timetable_Group_6 id="group_6"/>
+                                <Timetable_Group_7 id="group_7"/>
+                                <Timetable_Group_8 id="group_8"/>
+                                <Timetable_Group_9 id="group_9"/>
+                                <Timetable_Group_10 id="group_10"/>
+                                <Timetable_Group_11 id="group_11"/>
 
-                            <Schedule id="schedule"/>
+                                <Schedule id="schedule"/>
 
-                            <Practice id="practice"/>
-                            <Practice_Group_1 id="practice_group_1"/>
-                            <Practice_Group_2 id="practice_group_2"/>
+                                <Practice id="practice"/>
+                                <Practice_Group_1 id="practice_group_1"/>
+                                <Practice_Group_2 id="practice_group_2"/>
 
-                            <Directory id="directory"/>
-                            <Basic_Info id="basic_info"/>
-                            <Commission id="commission"/>
+                                <Directory id="directory"/>
+                                <Basic_Info id="basic_info"/>
+                                <Commission id="commission"/>
 
-                            <Specialties id="spec"/>
-                            <Specialties_1 id="spec_1"/>
-                            <Specialties_2 id="spec_2"/>
-                            <Specialties_3 id="spec_3"/>
-                            <Specialties_4 id="spec_4"/>
-                            
-                            <Resources id="resources"/>
-                            <Security id="security"/>
-                            <Diploma id="diploma"/>
-                            <Structure id="structure"/>
+                                <Specialties id="spec"/>
+                                <Specialties_1 id="spec_1"/>
+                                <Specialties_2 id="spec_2"/>
+                                <Specialties_3 id="spec_3"/>
+                                <Specialties_4 id="spec_4"/>
+                                
+                                <Resources id="resources"/>
+                                <Security id="security"/>
+                                <Diploma id="diploma"/>
+                                <Structure id="structure"/>
 
-                            <Exam id="exam"/>
-                            <Exam_Page_1 id="exam_page_1"/>
-                            <Exam_Page_2 id="exam_page_2"/>
-                            <Exam_Page_3 id="exam_page_3"/>
+                                <Exam id="exam"/>
+                                <Exam_Page_1 id="exam_page_1"/>
+                                <Exam_Page_2 id="exam_page_2"/>
+                                <Exam_Page_3 id="exam_page_3"/>
 
-                            <Plug_1 id="plug_1"/>
+                                <Plug_1 id="plug_1"/>
 
-                            <Placeholder_page id="placeholder_page"/>
-                        </View>
-                    </Root>
+                                <Placeholder_page id="placeholder_page"/>
+                            </View>
+                        </Root>
 
-                    <Root id="news" activeView={activeView} popout={popout}>
-                        <View
-                            id="news"
-                            modal={homeModals}
-                            activePanel={getActivePanel("news")}
-                            history={history}
-                            onSwipeBack={() => goBack()}
-                        >
-                            <News id="news_tab"/>
-                        </View>
-                    </Root>
+                        <Root id="news" activeView={activeView} popout={popout}>
+                            <View
+                                id="news"
+                                modal={homeModals}
+                                activePanel={getActivePanel("news")}
+                                history={history}
+                                onSwipeBack={() => goBack()}
+                            >
+                                <News id="news_tab"/>
+                            </View>
+                        </Root>
 
-                    <Root id="service" activeView={activeView} popout={popout}>
-                        <View
-                            id="service"
-                            modal={homeModals}
-                            activePanel={getActivePanel("service")}
-                            history={history}
-                            onSwipeBack={() => goBack()}
-                        >
-                            <Service id="service_tab"/>
+                        <Root id="service" activeView={activeView} popout={popout}>
+                            <View
+                                id="service"
+                                modal={homeModals}
+                                activePanel={getActivePanel("service")}
+                                history={history}
+                                onSwipeBack={() => goBack()}
+                            >
+                                <Service id="service_tab"/>
 
-                            <Random id="random"/>
+                                <Random id="random"/>
 
-                            <Sasha_Fond id="sasha_fond"/>
-                        </View>
-                    </Root>
+                                <Sasha_Fond id="sasha_fond"/>
+                            </View>
+                        </Root>
 
-                    <Root id="profile" activeView={activeView} popout={popout}>
-                        <View
-                            id="profile"
-                            modal={homeModals}
-                            activePanel={getActivePanel("profile")}
-                            history={history}
-                            onSwipeBack={() => goBack()}
-                        >
-                            <Profile id='profile_tab'/>
+                        <Root id="profile" activeView={activeView} popout={popout}>
+                            <View
+                                id="profile"
+                                modal={homeModals}
+                                activePanel={getActivePanel("profile")}
+                                history={history}
+                                onSwipeBack={() => goBack()}
+                            >
+                                <Profile id='profile_tab'/>
 
-                            <Settings id="settings"/>
+                                <Settings id="settings"/>
 
-                            <Donate id="donate"/>
+                                <Donate id="donate"/>
 
-                            <Achievements id="achievements"/>
+                                <Achievements id="achievements"/>
 
-                            <Newbie id="newbie"/>
-                            <Steep id="steep"/>
-                            <Static id="static"/>
-                            <Donut id="donut"/>
-                            <Subscriber id="subscriber"/>
-                            <EasterEgg id="easteregg"/>
-                            <Star id="star"/>
+                                <Newbie id="newbie"/>
+                                <Steep id="steep"/>
+                                <Static id="static"/>
+                                <Donut id="donut"/>
+                                <Subscriber id="subscriber"/>
+                                <EasterEgg id="easteregg"/>
+                                <Star id="star"/>
 
-                            <Sasha id="sasha"/>
-                        </View>
-                    </Root>
-                </Epic>
+                                <Sasha id="sasha"/>
+                            </View>
+                        </Root>
+                    </Epic>
+                </AppRoot>
             </ConfigProvider>
         );
     }

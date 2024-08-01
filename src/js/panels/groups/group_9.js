@@ -40,7 +40,7 @@ class Group_Panel extends React.Component {
         return (
             <Panel id={id}>
                 <PanelHeader
-                    left={<PanelHeaderBack onClick={() => goBack()}/>}
+                    before={<PanelHeaderBack onClick={() => goBack()}/>}
                 >
                     Расписание группы
                 </PanelHeader>
@@ -60,7 +60,7 @@ class Group_Panel extends React.Component {
                     <CardGrid size="l">
                         <ContentCard
                         onClick={() => bridge.send("VKWebAppShowImages", { images: [this.state.images[0]] })}
-                        image={this.state.images[0]}
+                        src={this.state.images[0]}
                         />
                     </CardGrid>
                 </Group>

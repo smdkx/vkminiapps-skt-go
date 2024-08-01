@@ -31,7 +31,7 @@ class SashaFond extends React.Component {
         return (
             <Panel id={id}>
                 <PanelHeader
-                    left={<PanelHeaderBack onClick={() => goBack()}/>}
+                    before={<PanelHeaderBack onClick={() => goBack()}/>}
                 >
                     Помощь Сашке
                 </PanelHeader>
@@ -40,7 +40,6 @@ class SashaFond extends React.Component {
 
                 <CardGrid size="l" style={{ marginTop: "20px", marginBottom: "20px"}}>
                     <ContentCard
-                    disabled
                     className="tw"
                     header="Благотворительность Сашке (какашке)"
                     text= {

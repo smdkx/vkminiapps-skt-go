@@ -34,7 +34,7 @@ class Exam extends React.Component {
         /*return (
             <Panel id={id}>
                 <PanelHeader
-                    left={<PanelHeaderBack onClick={() => goBack()}/>}
+                    before={<PanelHeaderBack onClick={() => goBack()}/>}
                 >
                     Экзамены
                 </PanelHeader>
@@ -68,7 +68,7 @@ class Exam extends React.Component {
         return (
             <Panel id={id} centered={true}>
                 <PanelHeader
-                    left={<PanelHeaderBack onClick={() => goBack()}/>}
+                    before={<PanelHeaderBack onClick={() => goBack()}/>}
                 >
                     Экзамены
                 </PanelHeader>

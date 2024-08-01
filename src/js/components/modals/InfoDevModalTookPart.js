@@ -20,8 +20,6 @@ import {
     Icon20DonateCircleFillYellow
 } from '@vkontakte/icons';
 
-import queryString from 'query-string';
-
 const numericIndicator = {
     height: 20,
     width: 20,
@@ -43,13 +41,6 @@ class InfoDevModalTookPart extends React.Component {
 
     }
 
-    componentDidMount() {
-        var params = queryString.parse(window.location.search);
-        this.setState({
-            device: params.vk_platform
-        });
-    }
-
     render() {
         const {id, onClose, platform} = this.props;
 
@@ -58,10 +49,15 @@ class InfoDevModalTookPart extends React.Component {
                 id={id}
                 header={
                     <ModalPageHeader
-                        left={platform !== IOS &&
-                        <PanelHeaderButton onClick={onClose}><Icon24Cancel/></PanelHeaderButton>}
-                        right={platform === IOS &&
-                        <PanelHeaderButton onClick={onClose}><Icon24Dismiss/></PanelHeaderButton>}
+                        before={platform !== IOS &&
+                            <PanelHeaderButton onClick={onClose}>
+                                <Icon24Cancel/>
+                            </PanelHeaderButton>}
+
+                        after={platform === IOS &&
+                            <PanelHeaderButton onClick={onClose}>
+                                <Icon24Dismiss/>
+                            </PanelHeaderButton>}
                     >
                         Приняли участие
                     </ModalPageHeader>
@@ -86,7 +82,7 @@ class InfoDevModalTookPart extends React.Component {
                                 </div>
                             </div>
                             }
-                            description='Memes generator'
+                            subtitle='Memes generator'
                             >
                                 Андрей Харитонов
                             </SimpleCell>
@@ -102,7 +98,7 @@ class InfoDevModalTookPart extends React.Component {
                                     </div>
                                 </div>
                             }
-                            description='Не пытается починить настройки'
+                            subtitle='Не пытается починить настройки'
                             >
                                 Александр Макаров
                             </SimpleCell>

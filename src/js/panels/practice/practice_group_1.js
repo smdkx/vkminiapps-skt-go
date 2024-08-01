@@ -36,7 +36,7 @@ class Practice_Group_1 extends React.Component {
         return (
             <Panel id={id}>
                 <PanelHeader
-                    left={<PanelHeaderBack onClick={() => goBack()}/>}
+                    before={<PanelHeaderBack onClick={() => goBack()}/>}
                 >
                     Расписание практики
                 </PanelHeader>
@@ -54,7 +54,7 @@ class Practice_Group_1 extends React.Component {
                     <CardGrid size="l">
                         <ContentCard
                         disabled
-                        image={practice}
+                        src={practice}
                         />
                     </CardGrid>
                 </Group>

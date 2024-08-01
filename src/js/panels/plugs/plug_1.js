@@ -35,7 +35,7 @@ class Plug extends React.Component {
         return (
             <Panel id={id} centered={true}>
                 <PanelHeader
-                    left={<PanelHeaderBack onClick={() => goBack()}/>}
+                    before={<PanelHeaderBack onClick={() => goBack()}/>}
                 >
                     Ошибка
                 </PanelHeader>

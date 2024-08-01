@@ -1,3 +1,3 @@
-export const __version = [
-    "2.6.5"
+export const appVersion = [
+    "2.7.0"
 ]

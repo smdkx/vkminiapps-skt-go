@@ -33,7 +33,7 @@ class Sasha extends React.Component {
         return (
             <Panel id={id}>
                 <PanelHeader
-                    left={<PanelHeaderBack onClick={() => goBack()}/>}
+                    before={<PanelHeaderBack onClick={() => goBack()}/>}
                 >
                     Саша что ты сделал
                 </PanelHeader>
@@ -56,9 +56,8 @@ class Sasha extends React.Component {
 
                 <CardGrid size="l" style={{ marginTop: "20px", marginBottom: "20px"}}>
                     <ContentCard
-                    disabled
                     className="tw"
-                    header="Добро пожаловать на страницу сохранения настроек"
+                    header="Сохранение настроек"
                     text= {
                         "Вы попали на страницу сохранения настроек. Спросите – почему они не были сохранены? Во всем виноват Сашка (@reizyk) , который перестал есть кашку и не может починить настройки.\n\nПоэтому Сашке фуллстак гендеру (ну типа) мы посвятили целую страницу, чтобы он наконец починил настройки.\n\nА теперь можете взглянуть на мем внизу и узнать, каким был бы Сашка, если бы починил настройки." 
                     }

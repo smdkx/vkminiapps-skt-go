@@ -38,7 +38,7 @@ class ExamPage extends React.Component {
         return (
             <Panel id={id}>
                 <PanelHeader
-                    left={<PanelHeaderBack onClick={() => goBack()}/>}
+                    before={<PanelHeaderBack onClick={() => goBack()}/>}
                 >
                     Экзамены
                 </PanelHeader>
@@ -54,7 +54,7 @@ class ExamPage extends React.Component {
 
                 <Div>
                     <ContentCard
-                        image={this.state.images[0]}
+                        src={this.state.images[0]}
                         onClick={() => bridge.send("VKWebAppShowImages", { images: [this.state.images[0]] })}
                     />
                 </Div>

@@ -66,6 +66,7 @@ class Other extends React.Component {
                     action: () => setPage('service', 'random')
                 }
             ]}
+            actionsLayout="horizontal"
             onClose={() => this.props.closePopout()}
             header="Подтвердите действие"
             text="Мемы могут содержать ненормативный конент, вы хотите продолжить?"
@@ -148,7 +149,7 @@ class Other extends React.Component {
                             <SimpleCell className="not__ready"
                             before={<Icon28MicrophoneVideocamOutline/>} 
                             disabled
-                            description='Скоро в приложении'
+                            subtitle='Скоро в приложении'
                             //onClick={this.openSnackbar}
                             >
                                 Голосовой и текстовый чат

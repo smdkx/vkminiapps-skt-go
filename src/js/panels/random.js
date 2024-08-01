@@ -54,7 +54,7 @@ class Random extends React.Component {
         return (
             <Panel id={id} centered={true}>
                 <PanelHeader
-                    left={<PanelHeaderBack onClick={() => goBack()}/>}
+                    before={<PanelHeaderBack onClick={() => goBack()}/>}
                 >
                      Случайный мем
                 </PanelHeader>
@@ -62,14 +62,14 @@ class Random extends React.Component {
                 {this.state.memes == null && (
                 <Group>
                     <Div className="random__div">
-                        <Title level="1" weight="bold" style={{ marginBottom: 16 }}>
+                        <Title level="1" weight="2" style={{ marginBottom: 16 }}>
                             Случайный мем
                         </Title>
-                        <Text weight="regular">
+                        <Text weight="3">
                             Хочешь получить случайный мем? Кликай на кнопку ниже!
                         </Text> <br />
-                        <Button size="l" stretched mode="secondary" onClick={this.random}>
-                            Погнали!
+                        <Button size="l" stretched mode="outline" onClick={this.random}>
+                            Погнали
                         </Button>
                         <Footer>Общее количество мемов: более 200 шт. Присутствует шанс их повторения.</Footer>
                     </Div>
@@ -79,11 +79,15 @@ class Random extends React.Component {
                 {this.state.memes !== null && (
                 <Group>
                     <Div className="random__div">
-                        <Text weight="regular">
+                        <Text weight="3">
                             <img className="random__block" src={this.state.memes} alt="memes" />
                         </Text> <br />
-                        <Button size="l" stretched mode="secondary" onClick={this.random}>
-                            Получить новый мем!
+                        <Button size="l" stretched mode="outline" appearance="positive" onClick={this.random} style={{ marginBottom: "20px"}}>
+                            Получить новый мем
+                        </Button>
+
+                        <Button size="l" stretched mode="outline" appearance="negative" onClick={goBack}>
+                            Перестать смотреть мемы
                         </Button>
                     </Div>
                 </Group>

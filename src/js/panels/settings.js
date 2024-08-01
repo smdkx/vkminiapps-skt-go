@@ -60,7 +60,7 @@ class Settings extends React.Component {
         return (
             <Panel id={id}>
                 <PanelHeader
-                    left={<PanelHeaderBack onClick={() => goBack()}/>}
+                    before={<PanelHeaderBack onClick={() => goBack()}/>}
                 >
                     Настройки
                 </PanelHeader>
@@ -76,7 +76,7 @@ class Settings extends React.Component {
                             <div className="CustomBanner__main">
                                 <div className="CustomBanner__header">Временные неполадки</div>
                                 <div className="CustomBanner__subheader">При сохранении настроек может появиться ошибка. Если это так – попробуйте зайти позже. Проблема известна, работаем над ее решением.</div>
-                                <Button mode="tertiary" target="_blank" style={{paddingLeft: 4, paddingRight: 4}} href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Перезагрузить сервер</Button>
+                                <Button mode="tertiary" target="_blank" style={{paddingbefore: 4, paddingRight: 4}} href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Перезагрузить сервер</Button>
                             </div>
                         </div>
                     </Card>
@@ -89,7 +89,7 @@ class Settings extends React.Component {
                             disabled
                             after={<Switch defaultChecked disabled/>}
                             before={<Icon28HideOutline />}
-                            description="Доступно Premium пользователям"
+                            subtitle="Доступно Premium пользователям"
                             >
                                 Отображение баннеров
                             </SimpleCell>

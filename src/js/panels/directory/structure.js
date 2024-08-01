@@ -40,7 +40,7 @@ class Structure extends React.Component {
         return (
             <Panel id={id}>
                 <PanelHeader
-                    left={<PanelHeaderBack onClick={() => goBack()}/>}
+                    before={<PanelHeaderBack onClick={() => goBack()}/>}
                 >
                     Структура
                 </PanelHeader>
@@ -48,7 +48,7 @@ class Structure extends React.Component {
                 <Group header={<Header mode="secondary">Организационная структура</Header>}> 
                     <CardGrid size="l">
                         <ContentCard
-                            image={this.state.images[0]}
+                            src={this.state.images[0]}
                             header="Структура колледжа"
                             onClick={() => bridge.send("VKWebAppShowImages", { images: [this.state.images[0]] })}
                             maxHeight={200}
