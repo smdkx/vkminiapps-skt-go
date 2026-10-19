@@ -2,10 +2,8 @@
 logs
 *.log
 npm-debug.log*
-*.lock
 
 # Dependency directories
-package-lock.json
 /node_modules
 
 # Optional npm cache directory
@@ -16,4 +14,6 @@ package-lock.json
 *.zip
 
 .DS_Store
-.gitignore
+.env
+.env.*
+!.env.example
