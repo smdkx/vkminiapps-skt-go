@@ -16,13 +16,10 @@ import App from './App';
 import '@vkontakte/vkui/dist/vkui.css';
 import './css/style.css';
 import { AdaptivityProvider } from '@vkontakte/vkui';
-import bridge from '@vkontakte/vk-bridge'; //test
 
 export const store = createStore(rootReducer, composeWithDevTools(
     applyMiddleware(thunk),
 ));
-
-bridge.send('VKWebAppInit', {}) //test
 
 store.dispatch(setStory('home', 'home_tab')); //базовая страница
 

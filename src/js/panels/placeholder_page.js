@@ -20,10 +20,6 @@ class PlaceholderPage extends React.Component {
         };
     }
 
-    async componentDidMount() {
-        document.getElementsByClassName('Tabbar')[0].style.display = 'none'; //отключаем таббар
-    }
-
     /*render() {
         const {id} = this.props;
 

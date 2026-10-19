@@ -118,7 +118,7 @@ class BasicInfo extends React.Component {
                         textWrap="full"
                         textLevel="primary"
                         >
-                            <Link href="mailto:smol.kollegetelekom@mail.ru">college@collegetel.ru</Link>
+                            <Link href="mailto:college@collegetel.ru">college@collegetel.ru</Link>
                     </MiniInfoCell>
                 </Group>
 

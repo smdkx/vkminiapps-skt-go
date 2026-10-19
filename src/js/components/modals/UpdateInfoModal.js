@@ -51,12 +51,12 @@ class UpdateInfoModal extends React.Component {
                 header={
                     <ModalPageHeader
                         before={platform !== IOS &&
-                            <PanelHeaderButton onClick={onClose}>
+                            <PanelHeaderButton aria-label="Закрыть окно" onClick={onClose}>
                                 <Icon24Cancel/>
                             </PanelHeaderButton>}
                         
                         after={platform === IOS &&
-                            <PanelHeaderButton onClick={onClose}>
+                            <PanelHeaderButton aria-label="Закрыть окно" onClick={onClose}>
                                 <Icon24Dismiss/>
                             </PanelHeaderButton>}
                     >

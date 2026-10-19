@@ -18,9 +18,6 @@
 }
 
 a, div, img, p, button {
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -33,39 +30,227 @@ a, div, img, p, button {
   max-width: 500px;
 }
 
-/* New block */
+/* News and saved schedules */
+
+.NewsFeed {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.NewsFeed__item + .NewsFeed__item {
+  padding-top: 0;
+}
+
+.NewsFeed__source {
+  padding-bottom: 4px;
+}
+
+.NewsFeed__sourceLink {
+  border-radius: inherit;
+}
+
+.NewsCard__body {
+  padding: 18px;
+}
+
+.NewsCard__date {
+  display: block;
+  color: var(--text_secondary);
+  font-size: 13px;
+  line-height: 18px;
+  margin-bottom: 8px;
+}
+
+.NewsCard--latest {
+  background: var(--background_content);
+  background-image: linear-gradient(120deg, rgba(63, 138, 224, .09), rgba(63, 138, 224, .02));
+}
+
+.NewsCard--latest .NewsCard__date {
+  color: var(--accent);
+}
+
+.NewsCard .NewsCard__title {
+  margin: 0 0 10px;
+  font-size: 18px;
+  line-height: 24px;
+  color: var(--text_primary);
+}
+
+.NewsCard--latest .NewsCard__title {
+  font-size: 22px;
+  line-height: 28px;
+}
+
+.NewsCard .NewsCard__text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text_primary);
+  overflow-wrap: break-word;
+}
+
+.SchedulePanel__hint {
+  margin: 8px 0 16px;
+  color: var(--text_primary);
+  opacity: .65;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.SchedulePanel__document {
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ScheduleImage {
+  overflow: hidden;
+}
+
+.ScheduleImage__loading {
+  display: flex;
+  min-height: 200px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: var(--text_primary);
+  font-size: 14px;
+}
+
+.ScheduleImage__loading > span:last-child {
+  margin-top: 12px;
+}
+
+.ScheduleImage__preview {
+  display: block;
+  background: #fff;
+  line-height: 0;
+  cursor: zoom-in;
+}
+
+.ScheduleImage__preview:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: -3px;
+}
+
+.ScheduleImage__preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.SchedulePanel__image {
+  margin: 12px 0 24px;
+}
+
+.HomeNotice .CustomBanner__subheader {
+  line-height: 20px;
+}
+
+/* Status badges */
+
+.title-with-badge {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+.title-with-badge__text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.block__new,
+.block__hot {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: .4px;
+  white-space: nowrap;
+}
 
 .block__new {
-  color: #FFFFFF;
-  background-color: #3F8AE0;
-  border-radius: 25px;
-  padding: 0 5px;
-  font-size: 17px;
+  color: #215db0;
+  background-color: #edf4ff;
 }
 
 .block__hot {
-  color: #FFFFFF;
-  background-color: red;
-  border-radius: 25px;
-  padding: 0 5px;
-  font-size: 17px;
+  color: #b0352d;
+  background-color: #fff0ed;
+}
+
+[scheme="space_gray"] .block__new,
+[scheme="vkcom_dark"] .block__new {
+  color: #9ec5ff;
+  background-color: #233247;
+}
+
+[scheme="space_gray"] .block__hot,
+[scheme="vkcom_dark"] .block__hot {
+  color: #ffaaa2;
+  background-color: #422925;
 }
 
 /* Block Random Memes / Sasha */
 
 .random__block {
   display: block;
-  width: 80%;
-  max-width: 500px;
+  width: 100%;
+  height: auto;
+  max-height: 65vh;
+  object-fit: contain;
   margin: auto;
 }
 
-.random__div {
+.MemePanel {
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.MemePanel__intro {
   text-align: center;
+  padding: 24px 0;
+}
+
+.MemePanel__intro > * + *,
+.MemePanel__actions > * + * {
+  margin-top: 12px;
+}
+
+.MemePanel__image {
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.MemePanel__loading {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  min-height: 240px;
+  color: var(--text_primary);
+  font-size: 14px;
+}
+
+.MemePanel__loading > span:last-child {
+  margin-top: 12px;
+}
+
+.MemePanel__actions {
+  width: 100%;
 }
 
 /* Tabbar click */
@@ -92,6 +277,8 @@ a, div, img, p, button {
   margin: 0 auto;
   align-items: center;
   justify-content: center;
+  max-width: 100%;
+  height: auto;
 }
 
 /* Not ready block */
@@ -150,6 +337,12 @@ a, div, img, p, button {
   border-radius: 14px;
   /* background-color: var(--content_tint_background); */
   cursor: pointer;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
 }
 
 .FeedbackBanner__main {

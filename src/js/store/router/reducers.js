@@ -1,317 +1,139 @@
 import {
-    SET_PAGE,
-    GO_BACK,
-    OPEN_POPOUT,
-    CLOSE_POPOUT,
-    OPEN_MODAL,
-    CLOSE_MODAL,
-    SET_STORY
+    SET_PAGE, SET_STORY, GO_BACK, OPEN_POPOUT, CLOSE_POPOUT,
+    OPEN_MODAL, CLOSE_MODAL, RESTORE_ROUTER
 } from './actionTypes';
-
-import * as VK from "../../services/VK";
-import {smoothScrollToTop} from "../../services/_functions";
 
 const initialState = {
     activeStory: null,
     activeView: null,
     activePanel: null,
-
     storiesHistory: [],
-    viewsHistory: [],
-    panelsHistory: [],
+    viewsHistory: {},
+    panelsHistory: {},
+    swipeBackHistory: [],
+    activeModals: {},
+    modalHistory: {},
+    popouts: {},
+    scrollPosition: {}
+};
 
-    activeModals: [],
-    modalHistory: [],
-    popouts: [],
-
-    scrollPosition: []
+const rememberScroll = (state, scrollY) => state.activePanel === null ? state.scrollPosition : {
+    ...state.scrollPosition,
+    [state.activeStory + '_' + state.activeView + '_' + state.activePanel]: scrollY || 0
 };
 
 export const routerReducer = (state = initialState, action) => {
+    const payload = action.payload || {};
+    const view = state.activeView;
 
     switch (action.type) {
+        case RESTORE_ROUTER:
+            return payload.router;
 
         case SET_PAGE: {
-            let View = action.payload.view;
-            let Panel = action.payload.panel;
-
-            window.history.pushState(null, null);
-
-            let panelsHistory = state.panelsHistory[View] || [];
-            let viewsHistory = state.viewsHistory[state.activeStory] || [];
-
-            const viewIndexInHistory = viewsHistory.indexOf(View);
-
-            if (viewIndexInHistory !== -1) {
-                viewsHistory.splice(viewIndexInHistory, 1);
-            }
-
-            if (panelsHistory.indexOf(Panel) === -1) {
-                panelsHistory = [...panelsHistory, Panel];
-            }
-
-            if (panelsHistory.length > 1) {
-                VK.swipeBackOn();
-            }
+            if (view === payload.view && state.activePanel === payload.panel) return state;
+            const panels = state.panelsHistory[payload.view] || [];
+            const panelIndex = panels.indexOf(payload.panel);
+            const nextPanels = panelIndex === -1 ? [...panels, payload.panel] : panels.slice(0, panelIndex + 1);
+            const views = state.viewsHistory[state.activeStory] || [];
 
             return {
                 ...state,
-                activeView: View,
-                activePanel: Panel,
-
+                activeView: payload.view,
+                activePanel: payload.panel,
+                swipeBackHistory: nextPanels.slice(-2),
                 panelsHistory: {
                     ...state.panelsHistory,
-                    [View]: panelsHistory,
+                    [payload.view]: nextPanels
                 },
                 viewsHistory: {
                     ...state.viewsHistory,
-                    [state.activeStory]: [...viewsHistory, View]
+                    [state.activeStory]: [...views.filter(item => item !== payload.view), payload.view]
                 },
-                scrollPosition: {
-                    ...state.scrollPosition,
-                    [state.activeStory + "_" + state.activeView + "_" + state.activePanel]: window.pageYOffset
-                }
+                scrollPosition: rememberScroll(state, payload.scrollY)
             };
         }
 
         case SET_STORY: {
-            window.history.pushState(null, null);
-
-            let viewsHistory = state.viewsHistory[action.payload.story] || [action.payload.story];
-
-            let storiesHistory = state.storiesHistory;
-            let activeView = viewsHistory[viewsHistory.length - 1];
-            let panelsHistory = state.panelsHistory[activeView] || [action.payload.initial_panel];
-            let activePanel = panelsHistory[panelsHistory.length - 1];
-
-            if (action.payload.story === state.activeStory) {
-                if (panelsHistory.length > 1) {
-                    let firstPanel = panelsHistory.shift();
-                    panelsHistory = [firstPanel];
-
-                    activePanel = panelsHistory[panelsHistory.length - 1];
-                } else if (viewsHistory.length > 1) {
-                    let firstView = viewsHistory.shift();
-                    viewsHistory = [firstView];
-
-                    activeView = viewsHistory[viewsHistory.length - 1];
-                    panelsHistory = state.panelsHistory[activeView];
-                    activePanel = panelsHistory[panelsHistory.length - 1];
-                }
-            }
-
-            if (action.payload.story === state.activeStory && panelsHistory.length === 1 && window.pageYOffset > 0) {
-                window.scrollTo(0, 30);
-
-                smoothScrollToTop();
-            }
-
-            const storiesIndexInHistory = storiesHistory.indexOf(action.payload.story);
-
-            if (storiesIndexInHistory === -1 || (storiesHistory[0] === action.payload.story && storiesHistory[storiesHistory.length - 1] !== action.payload.story)) {
-                storiesHistory = [...storiesHistory, action.payload.story];
-            }
+            const reset = payload.story === state.activeStory;
+            const views = reset ? [payload.story] : state.viewsHistory[payload.story] || [payload.story];
+            const activeView = views[views.length - 1];
+            const panels = reset ? [payload.initial_panel] : state.panelsHistory[activeView] || [payload.initial_panel];
+            const activePanel = panels[panels.length - 1];
+            if (reset && view === activeView && state.activePanel === activePanel) return state;
 
             return {
                 ...state,
-                activeStory: action.payload.story,
-                activeView: activeView,
-                activePanel: activePanel,
-
-                storiesHistory: storiesHistory,
-                viewsHistory: {
-                    ...state.viewsHistory,
-                    [activeView]: viewsHistory
-                },
-                panelsHistory: {
-                    ...state.panelsHistory,
-                    [activeView]: panelsHistory
-                },
-
-                scrollPosition: {
-                    ...state.scrollPosition,
-                    [state.activeStory + "_" + state.activeView + "_" + state.activePanel]: window.pageYOffset
-                }
+                activeStory: payload.story,
+                activeView,
+                activePanel,
+                swipeBackHistory: panels.slice(-2),
+                storiesHistory: reset ? state.storiesHistory : [...state.storiesHistory, payload.story],
+                viewsHistory: {...state.viewsHistory, [payload.story]: views},
+                panelsHistory: {...state.panelsHistory, [activeView]: panels},
+                scrollPosition: rememberScroll(state, payload.scrollY)
             };
         }
 
-        case GO_BACK: {
-            let setView = state.activeView;
-            let setPanel = state.activePanel;
-            let setStory = state.activeStory;
-
-            let popoutsData = state.popouts;
-
-            if (popoutsData[setView]) {
-                popoutsData[setView] = null;
-
-                return {
-                    ...state,
-                    popouts: {
-                        ...state.popouts, popoutsData
-                    }
-                };
-            }
-
-            let viewModalsHistory = state.modalHistory[setView];
-
-            if (viewModalsHistory !== undefined && viewModalsHistory.length !== 0) {
-                let activeModal = viewModalsHistory[viewModalsHistory.length - 2] || null;
-
-                if (activeModal === null) {
-                    viewModalsHistory = [];
-                } else if (viewModalsHistory.indexOf(activeModal) !== -1) {
-                    viewModalsHistory = viewModalsHistory.splice(0, viewModalsHistory.indexOf(activeModal) + 1);
-                } else {
-                    viewModalsHistory.push(activeModal);
-                }
-
-                return {
-                    ...state,
-                    activeModals: {
-                        ...state.activeModals,
-                        [setView]: activeModal
-                    },
-                    modalHistory: {
-                        ...state.modalHistory,
-                        [setView]: viewModalsHistory
-                    }
-                };
-            }
-
-            let panelsHistory = state.panelsHistory[setView] || [];
-            let viewsHistory = state.viewsHistory[state.activeStory] || [];
-            let storiesHistory = state.storiesHistory;
-
-            var temp = false; //
-            if (panelsHistory.length > 1) {
-                panelsHistory.pop();
-
-                setPanel = panelsHistory[panelsHistory.length - 1];
-            } else if (viewsHistory.length > 1) {
-                viewsHistory.pop();
-
-                setView = viewsHistory[viewsHistory.length - 1];
-                let panelsHistoryNew = state.panelsHistory[setView];
-
-                setPanel = panelsHistoryNew[panelsHistoryNew.length - 1];
-            } else if (storiesHistory.length > 1) {
-                storiesHistory.pop();
-
-                setStory = storiesHistory[storiesHistory.length - 1];
-                setView = state.viewsHistory[setStory][state.viewsHistory[setStory].length - 1];
-
-                let panelsHistoryNew = state.panelsHistory[setView];
-
-                if (panelsHistoryNew.length > 1) {
-                    setPanel = panelsHistoryNew[panelsHistoryNew.length - 1];
-                } else {
-                    setPanel = panelsHistoryNew[0];
-                }
-            } else {
-                temp = true; //
-                VK.closeApp();
-            }
-
-            if (panelsHistory.length === 1) {
-                VK.swipeBackOff();
-            }
-
-            if(!temp) document.getElementsByClassName('Tabbar')[0].style.display = ''; //включаем таббар
-
+        case OPEN_POPOUT:
+        case CLOSE_POPOUT:
             return {
                 ...state,
-                activeView: setView,
-                activePanel: setPanel,
-                activeStory: setStory,
-
-                viewsHistory: {
-                    ...state.viewsHistory,
-                    [state.activeView]: viewsHistory
-                },
-                panelsHistory: {
-                    ...state.panelsHistory,
-                    [state.activeView]: panelsHistory
-                }
+                popouts: {...state.popouts, [view]: action.type === OPEN_POPOUT ? payload.popout : null}
             };
-        }
-
-        case OPEN_POPOUT: {
-            window.history.pushState(null, null);
-
-            return {
-                ...state,
-                popouts: {
-                    ...state.popouts,
-                    [state.activeView]: action.payload.popout
-                }
-            };
-        }
-
-        case CLOSE_POPOUT: {
-            return {
-                ...state,
-                popouts: {
-                    ...state.popouts,
-                    [state.activeView]: null
-                }
-            };
-        }
 
         case OPEN_MODAL: {
-            window.history.pushState(null, null);
-
-            let activeModal = action.payload.id || null;
-            let modalsHistory = state.modalHistory[state.activeView] ? [...state.modalHistory[state.activeView]] : [];
-
-            if (activeModal === null) {
-                modalsHistory = [];
-            } else if (modalsHistory.indexOf(activeModal) !== -1) {
-                modalsHistory = modalsHistory.splice(0, modalsHistory.indexOf(activeModal) + 1);
-            } else {
-                modalsHistory.push(activeModal);
-            }
-
+            const modals = state.modalHistory[view] || [];
+            const modalIndex = modals.indexOf(payload.id);
             return {
                 ...state,
-                activeModals: {
-                    ...state.activeModals,
-                    [state.activeView]: activeModal
-                },
+                activeModals: {...state.activeModals, [view]: payload.id || null},
                 modalHistory: {
                     ...state.modalHistory,
-                    [state.activeView]: modalsHistory
+                    [view]: !payload.id ? [] : modalIndex === -1 ? [...modals, payload.id] : modals.slice(0, modalIndex + 1)
                 }
             };
         }
 
         case CLOSE_MODAL: {
-            let activeModal = state.modalHistory[state.activeView][state.modalHistory[state.activeView].length - 2] || null;
-            let modalsHistory = state.modalHistory[state.activeView] ? [...state.modalHistory[state.activeView]] : [];
-
-            if (activeModal === null) {
-                modalsHistory = [];
-            } else if (modalsHistory.indexOf(activeModal) !== -1) {
-                modalsHistory = modalsHistory.splice(0, modalsHistory.indexOf(activeModal) + 1);
-            } else {
-                modalsHistory.push(activeModal);
-            }
-
+            const modals = (state.modalHistory[view] || []).slice(0, -1);
             return {
                 ...state,
-                activeModals: {
-                    ...state.activeModals,
-                    [state.activeView]: activeModal
-                },
-                modalHistory: {
-                    ...state.modalHistory,
-                    [state.activeView]: modalsHistory
-                }
+                activeModals: {...state.activeModals, [view]: modals[modals.length - 1] || null},
+                modalHistory: {...state.modalHistory, [view]: modals}
             };
         }
 
-        default: {
+        // Logical Back follows overlays and the tab's hierarchy. The action
+        // reconciles this target with the browser history separately.
+        case GO_BACK: {
+            if (state.popouts[view]) return routerReducer(state, {type: CLOSE_POPOUT});
+            if (state.activeModals[view]) return routerReducer(state, {type: CLOSE_MODAL});
+            const panels = state.panelsHistory[view] || [];
+            const views = state.viewsHistory[state.activeStory] || [];
+            const stories = state.storiesHistory;
+            if (panels.length > 1) {
+                const previousPanels = panels.slice(0, -1);
+                return {...state, activePanel: previousPanels[previousPanels.length - 1], swipeBackHistory: previousPanels.slice(-2), panelsHistory: {...state.panelsHistory, [view]: previousPanels}};
+            }
+            if (views.length > 1) {
+                const previousViews = views.slice(0, -1);
+                const previousView = previousViews[previousViews.length - 1];
+                const previousPanels = state.panelsHistory[previousView];
+                return {...state, activeView: previousView, activePanel: previousPanels[previousPanels.length - 1], swipeBackHistory: previousPanels.slice(-2), viewsHistory: {...state.viewsHistory, [state.activeStory]: previousViews}};
+            }
+            if (stories.length > 1) {
+                const previousStories = stories.slice(0, -1);
+                const story = previousStories[previousStories.length - 1];
+                const previousViews = state.viewsHistory[story];
+                const previousView = previousViews[previousViews.length - 1];
+                const previousPanels = state.panelsHistory[previousView];
+                return {...state, activeStory: story, activeView: previousView, activePanel: previousPanels[previousPanels.length - 1], swipeBackHistory: previousPanels.slice(-2), storiesHistory: previousStories};
+            }
             return state;
         }
+
+        default:
+            return state;
     }
 };

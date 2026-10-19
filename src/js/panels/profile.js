@@ -5,7 +5,11 @@ import {setPage, openModal} from "../store/router/actions";
 
 import { appVersion } from '../components/data/profile.data';
 
-import bridge from '@vkontakte/vk-bridge';
+import {sendBridgeRequest, hapticNotification} from '../services/bridge';
+import {addAppToFavorites, shareApplication, getAppActionErrorMessage} from '../services/appActions';
+import {earnAchievement} from '../store/achievements';
+import {loadStudentSettings} from '../store/studentSettings';
+import {getDepartmentTitle} from '../components/data/education.data';
 
 import {
     Panel,
@@ -23,7 +27,8 @@ import {
     Button,
     Link,
     Card,
-    Div
+    Div,
+    Placeholder
 } from "@vkontakte/vkui";
 
 import { 
@@ -41,10 +46,6 @@ import {
 
 import AchievementsLogo from "../../img/achievements.png";
 
-var FirstOpen = true;
-
-let avatar_profile, first_name, last_name, sex;
-
 class Profile extends React.Component {
 
     constructor(props) {
@@ -52,86 +53,125 @@ class Profile extends React.Component {
 
         this.state = {
             snackbar: null,
-            loader: false,
+            user: null,
+            loading: true,
+            error: null,
+            addingToFavorites: false,
+            sharing: false,
         };
 
+        this.isMountedProfile = false;
+        this.profilePending = false;
+        this.actionPending = new Set();
+        this.awaitingAchievementSave = new Set();
+        this.loadProfile = this.loadProfile.bind(this);
         this.AddToFavorites = this.AddToFavorites.bind(this);
-        this.openSnackbar = this.openSnackbar.bind(this);
+        this.shareApp = this.shareApp.bind(this);
+        this.onVersionTap = this.onVersionTap.bind(this);
+        this.versionTapCount = 0;
     }
 
-    async componentDidMount() {
-
-        if(FirstOpen) {
-            FirstOpen = false;
-            this.setState({
-                loader: true
-            });
-        }
-
-        await bridge.send('VKWebAppGetUserInfo').then((data) => {
-            avatar_profile = data.photo_200;
-            first_name = data.first_name;
-            last_name = data.last_name;
-            sex = data.sex;
-        });
-
-        this.setState({
-            loader: false
-        });
+    componentDidMount() {
+        this.isMountedProfile = true;
+        this.loadProfile();
+        this.props.loadStudentSettings().catch(() => this.showSnackbar('Не удалось загрузить настройки.'));
     }
 
-    async AddToFavorites() { //функция добавления в избранное
+    componentWillUnmount() {
+        this.isMountedProfile = false;
+    }
+
+    async loadProfile() {
+        if (this.profilePending) return;
+        this.profilePending = true;
+        this.setState({loading: true, error: null});
+
         try {
-            await bridge.send('VKWebAppAddToFavorites')
-            bridge.send("VKWebAppTapticNotificationOccurred", {"type": "success"}); //вибро
-                if (this.state.snackbar) return;
-                this.setState({ snackbar:
-                <Snackbar
-                layout='vertical'
-                onClose={() => this.setState({ snackbar: null })}
-                before={<Avatar size={24} style={{ background: 'green' }}><Icon16CheckCircleOutline fill="#fff" width={14} height={14} /></Avatar>}
-                >
-                    Сервис успешно добавлен в избранное!
-                </Snackbar>
-            })
-        } catch (error) { //обработка ошибки
-            bridge.send("VKWebAppTapticNotificationOccurred", {"type": "error"}); //вибро
-            console.log(error);
-            if (this.state.snackbar) return;
-            this.setState({ snackbar:
-            <Snackbar
-            layout='vertical'
-            onClose={() => this.setState({ snackbar: null })}
-            before={<Avatar size={24} style={{ background: 'red' }}><Icon16ErrorCircleOutline fill="#fff" width={14} height={14} /></Avatar>}
-            >
-                Произошла ошибка, попробуйте снова!
-            </Snackbar>
-            })
+            const user = await sendBridgeRequest('VKWebAppGetUserInfo');
+            if (!user || !user.first_name) throw new Error('Invalid user info');
+            if (this.isMountedProfile) this.setState({user});
+        } catch (error) {
+            const code = error && error.code;
+            let message = 'Не удалось загрузить профиль.';
+            if (code === 'UNSUPPORTED_ENVIRONMENT' || code === 'UNSUPPORTED_METHOD') {
+                message = 'Профиль недоступен в этом клиенте.';
+            } else if (code === 'BRIDGE_TIMEOUT') {
+                message = 'Время ожидания истекло.';
+            }
+            if (this.isMountedProfile) this.setState({error: message});
+        } finally {
+            this.profilePending = false;
+            if (this.isMountedProfile) this.setState({loading: false});
         }
     }
 
-    openSnackbar () {
-        bridge.send("VKWebAppTapticNotificationOccurred", {"type": "error"}); //вибро
-        if (this.state.snackbar) return;
-        this.setState({ snackbar:
-          <Snackbar
-            layout='vertical'
-            onClose={() => this.setState({ snackbar: null })}
-            before={<Avatar size={24} style={{ background: 'red' }}><Icon16ErrorCircleOutline fill="#fff" width={14} height={14} /></Avatar>}
-          >
-              Достижения временно недоступны.
-          </Snackbar>
+    showSnackbar(message, success = false) {
+        if (!this.isMountedProfile) return;
+        hapticNotification(success ? 'success' : 'error');
+        this.setState({snackbar:
+            <Snackbar
+                layout='vertical'
+                onClose={() => {
+                    if (this.isMountedProfile) this.setState({snackbar: null});
+                }}
+                before={<Avatar size={24} style={{background: success ? 'green' : 'red'}}>
+                    {success ? <Icon16CheckCircleOutline fill="#fff" width={14} height={14} /> : <Icon16ErrorCircleOutline fill="#fff" width={14} height={14} />}
+                </Avatar>}
+            >
+                {message}
+            </Snackbar>
         });
-      }
+    }
+
+    async completeAchievementAction(achievement, action, loadingState, successMessage) {
+        if (this.actionPending.has(achievement)) return;
+        this.actionPending.add(achievement);
+        this.setState({[loadingState]: true, snackbar: null});
+        let confirmed = this.awaitingAchievementSave.has(achievement);
+        try {
+            if (!confirmed) await action();
+            confirmed = true;
+            this.awaitingAchievementSave.add(achievement);
+            await this.props.earnAchievement(achievement);
+            this.awaitingAchievementSave.delete(achievement);
+            this.showSnackbar(successMessage, true);
+        } catch (error) {
+            this.showSnackbar(confirmed
+                ? 'Не удалось сохранить достижение.'
+                : getAppActionErrorMessage(error, achievement));
+        } finally {
+            this.actionPending.delete(achievement);
+            if (this.isMountedProfile) this.setState({[loadingState]: false});
+        }
+    }
+
+    AddToFavorites() {
+        return this.completeAchievementAction('star', addAppToFavorites, 'addingToFavorites',
+            'Приложение в избранном. Достижение «Избранный» сохранено!');
+    }
+
+    shareApp() {
+        return this.completeAchievementAction('static', shareApplication, 'sharing',
+            'Вы поделились приложением. Достижение «Статистика» сохранено!');
+    }
+
+    onVersionTap() {
+        this.versionTapCount += 1;
+        if (this.versionTapCount < 5) return;
+        this.versionTapCount = 0;
+        this.props.setPage('profile', 'debug');
+    }
 
     render() {
-        const {id, setPage} = this.props;
+        const {id, setPage, studentSettings} = this.props;
+        const {user, loading, error} = this.state;
+        const settingsStatus = studentSettings.loading ? 'Загружаем…' : 'Не загружено';
 
         return (
             <Panel id={id}>
                 <PanelHeader
                 before={
-                    <PanelHeaderButton onClick={() => setPage('profile', 'settings')}>
+                    <PanelHeaderButton aria-label="Настройки профиля" onClick={() => setPage('profile', 'settings')}>
                         <Icon28SettingsOutline />
                     </PanelHeaderButton>
                 }
@@ -140,7 +180,12 @@ class Profile extends React.Component {
                 </PanelHeader>
 
                 <Group>
-                    {this.state.loader ? <PanelSpinner/> : <Gradient style={{
+                    {loading ? <PanelSpinner aria-label="Загрузка профиля"/> : error ? <Placeholder
+                        header="Профиль недоступен"
+                        action={<Button onClick={this.loadProfile}>Повторить</Button>}
+                    >
+                        <span role="alert">{error}</span>
+                    </Placeholder> : user && <Gradient style={{
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
@@ -148,16 +193,16 @@ class Profile extends React.Component {
                         textAlign: 'center',
                         padding: 15,
                     }}>
-                        <Avatar size={96} src={avatar_profile} />
-                        <Title style={{ marginBottom: 8, marginTop: 15 }} level="2" weight="3">{first_name} {last_name}</Title>
-                        <Text style={{ marginBottom: 20, color: 'var(--text_secondary)' }}>{sex === 1 ? "Студентка" : "Студент"}</Text>
+                        <Avatar size={96} src={user.photo_200} alt="Фото профиля" />
+                        <Title style={{ marginBottom: 8, marginTop: 15 }} level="2" weight="3">{user.first_name} {user.last_name}</Title>
+                        <Text style={{ marginBottom: 20, color: 'var(--text_secondary)' }}>{user.sex === 1 ? "Студентка" : user.sex === 2 ? "Студент" : "Профиль ВКонтакте"}</Text>
                         <Button size="m" mode="secondary" onClick={() => setPage('profile', 'donate')}>Подробнее о VK Donut</Button>
                     </Gradient> }
 
-                    <Group header={<Header mode='secondary' aside={<Link onClick={() => setPage('profile', 'achievements')}>Подробнее</Link>}>Достижения</Header>}>
+                    <Group header={<Header mode='secondary' aside={<Link Component="button" type="button" onClick={() => setPage('profile', 'achievements')}>Подробнее</Link>}>Достижения</Header>}>
                         <Div>
                             <Card size="l" mode="shadow">
-                                <img width="330" height="96" src={AchievementsLogo} alt="achievements" className="Achievements_logo" />
+                                <img width="330" height="96" src={AchievementsLogo} alt="Достижения" className="Achievements_logo" />
                             </Card>
                         </Div>
                     </Group>
@@ -175,17 +220,17 @@ class Profile extends React.Component {
                             </SimpleCell>
 
                             <SimpleCell
-                            disabled
                             before={<Icon28Users3Outline/>} 
-                            subtitle='Не указано'
+                            subtitle={studentSettings.loaded ? getDepartmentTitle(studentSettings.department) : settingsStatus}
+                            expandable multiline onClick={() => setPage('profile', 'settings')}
                             >
-                                Факультет
+                                Отделение
                             </SimpleCell>
 
                             <SimpleCell
-                            disabled
                             before={<Icon28UsersOutline/>} 
-                            subtitle='Не указано'
+                            subtitle={studentSettings.loaded ? studentSettings.group || 'Не выбрана' : settingsStatus}
+                            expandable multiline onClick={() => setPage('profile', 'settings')}
                             >
                                 Группа
                             </SimpleCell>
@@ -198,7 +243,8 @@ class Profile extends React.Component {
                         <Card size="l" mode="shadow">
                             <SimpleCell
                             before={<Icon28FavoriteOutline/>} 
-                            subtitle='Добавляет сервис в избранные приложения'
+                            subtitle={this.state.addingToFavorites ? 'Ожидаем подтверждение ВКонтакте…' : 'Добавляет сервис в избранные приложения'}
+                            disabled={this.state.addingToFavorites}
                             onClick={this.AddToFavorites}
                             >
                                 Добавить в избранное
@@ -206,9 +252,9 @@ class Profile extends React.Component {
 
                             <SimpleCell 
                             before={<Icon28ShareOutline/>} 
-                            subtitle='Поделитесь с друзьями нашим приложением'
-                            onClick={() => bridge.send("VKWebAppShare", {"link": "https://vk.com/app7469712"})}
-                            //onClick={() =>  bridge.send("VKWebAppShowWallPostBox", {"message": "Я использую SKT APP, а ты?"})}
+                            subtitle={this.state.sharing ? 'Ожидаем ответ ВКонтакте…' : 'Поделитесь с друзьями нашим приложением'}
+                            disabled={this.state.sharing}
+                            onClick={this.shareApp}
                             >
                                 Поделиться с друзьями
                             </SimpleCell>
@@ -228,9 +274,9 @@ class Profile extends React.Component {
                             </SimpleCell>
 
                             <SimpleCell
-                            disabled
                             before={<Icon28ServicesOutline/>} 
                             subtitle={appVersion}
+                            onClick={this.onVersionTap}
                             >
                                 Версия приложения
                             </SimpleCell>
@@ -248,7 +294,9 @@ class Profile extends React.Component {
 
 const mapDispatchToProps = {
     setPage,
-    openModal
+    openModal,
+    earnAchievement,
+    loadStudentSettings
 };
 
-export default connect(null, mapDispatchToProps)(Profile);
+export default connect(({studentSettings}) => ({studentSettings}), mapDispatchToProps)(Profile);

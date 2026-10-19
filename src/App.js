@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux'
-import {goBack, closeModal, setStory} from "./js/store/router/actions";
+import {goBack, closeModal, setStory, handleHistoryChange} from "./js/store/router/actions";
 import {getActivePanel} from "./js/services/_functions";
 import * as VK from './js/services/VK';
 import bridge from '@vkontakte/vk-bridge'
@@ -54,18 +54,9 @@ import Schedule from './js/panels/schedule';
 //Random
 import Random from './js/panels/random';
 
-//Панели всех групп
-import Timetable_Group_1 from './js/panels/groups/group_1';
-import Timetable_Group_2 from './js/panels/groups/group_2';
-import Timetable_Group_3 from './js/panels/groups/group_3';
-import Timetable_Group_4 from './js/panels/groups/group_4';
-import Timetable_Group_5 from './js/panels/groups/group_5';
-import Timetable_Group_6 from './js/panels/groups/group_6';
-import Timetable_Group_7 from './js/panels/groups/group_7';
-import Timetable_Group_8 from './js/panels/groups/group_8';
-import Timetable_Group_9 from './js/panels/groups/group_9';
-import Timetable_Group_10 from './js/panels/groups/group_10';
-import Timetable_Group_11 from './js/panels/groups/group_11';
+//Панели расписаний групп
+import GroupSchedule from './js/panels/groups/groupSchedule';
+import {timetableGroups} from './js/components/data/timetable.data';
 
 //Расписание экзаменов + панель экзаменов
 import Exam from './js/panels/exam';
@@ -99,6 +90,9 @@ import Plug_1 from './js/panels/plugs/plug_1';
 
 //Панель настроек
 import Settings from './js/panels/settings';
+import Debug, {DebugPremium, DebugAchievements} from './js/panels/debug';
+import {loadBannerSettings, checkPremiumSubscription} from './js/store/premium';
+import AchievementTracker from './js/components/AchievementTracker';
 
 //Панель VK Donut
 import Donate from './js/panels/donate';
@@ -127,54 +121,38 @@ class App extends React.Component {
     constructor(props) {
         super(props);
 
-        this.lastAndroidBackAction = 0;
-    }
-
-    componentDidMount() {
-        const {goBack, dispatch} = this.props;
-
-        dispatch(VK.initApp());
-
-        bridge.subscribe(({ detail: { type, data } }) => {
-            if (type === "VKWebAppUpdateConfig") {
-                const schemeAttribute = document.createAttribute("scheme");
-                schemeAttribute.value = data.scheme ? data.scheme : "client_light";
-                this.setState({ theme: data.scheme });
-                document.body.attributes.setNamedItem(schemeAttribute);
-            }
-        });
-
-        window.onpopstate = () => {
-            let timeNow = +new Date();
-
-            if (timeNow - this.lastAndroidBackAction > 500) {
-                this.lastAndroidBackAction = timeNow;
-
-                goBack();
-            } else {
-                window.history.pushState(null, null);
-            }
+        this.onHistoryChange = (event) => this.props.handleHistoryChange(event);
+        this.restorePanelScroll = () => {
+            const {activeView, activeStory, activePanel, scrollPosition} = this.props;
+            window.scrollTo(0, scrollPosition[activeStory + '_' + activeView + '_' + activePanel] || 0);
         };
     }
 
+    componentDidMount() {
+        this.unsubscribeVK = this.props.dispatch(VK.initApp());
+        this.props.dispatch(loadBannerSettings()).catch(() => {});
+        // Premium controls are unlocked automatically after successful verification.
+        // Keep them locked when VK cannot confirm the subscription.
+        this.props.dispatch(checkPremiumSubscription()).catch(() => {});
+        window.addEventListener('popstate', this.onHistoryChange);
+    }
+
+    componentWillUnmount() {
+        this.unsubscribeVK();
+        window.removeEventListener('popstate', this.onHistoryChange);
+    }
+
     componentDidUpdate(prevProps, prevState, snapshot) {
-        const {activeView, activeStory, activePanel, scrollPosition} = this.props;
-
-        if (
-            prevProps.activeView !== activeView ||
-            prevProps.activePanel !== activePanel ||
-            prevProps.activeStory !== activeStory
-        ) {
-            let pageScrollPosition = scrollPosition[activeStory + "_" + activeView + "_" + activePanel] || 0;
-
-            window.scroll(0, pageScrollPosition);
+        if (prevProps.activeView !== this.props.activeView || prevProps.activeStory !== this.props.activeStory) {
+            this.restorePanelScroll();
         }
     }
 
     render() {
-        const {goBack, setStory, closeModal, popouts, activeView, activeStory, activeModals, panelsHistory, colorScheme} = this.props;
+        const {goBack, setStory, closeModal, popouts, activeView, activeStory, activePanel, activeModals, swipeBackHistory, colorScheme} = this.props;
+        const showTabbar = !['random', 'practice', 'exam', 'placeholder_page'].includes(activePanel);
 
-        let history = (panelsHistory[activeView] === undefined) ? [activeView] : panelsHistory[activeView];
+        const history = swipeBackHistory;
         let popout = (popouts[activeView] === undefined) ? null : popouts[activeView];
 
         let activeModal = (activeModals[activeView] === undefined) ? null : activeModals[activeView];
@@ -205,9 +183,9 @@ class App extends React.Component {
         );
 
         return (
-            <ConfigProvider isWebView={true} scheme={colorScheme}>
+            <ConfigProvider isWebView={bridge.isWebView()} scheme={colorScheme}>
                 <AppRoot>
-                    <Epic activeStory={activeStory} tabbar={
+                    <Epic activeStory={activeStory} tabbar={showTabbar ?
                         <Tabbar>
                             <TabbarItem //Первый таб
                                 onClick={() => setStory('home', 'home_tab')}
@@ -232,7 +210,7 @@ class App extends React.Component {
                                 selected={activeStory === 'profile'}
                                 text="Профиль"
                             ><Icon28UserCircleOutline/></TabbarItem>
-                        </Tabbar>
+                        </Tabbar> : null
                     }>
                         <Root id="home" activeView={activeView} popout={popout}>
                             <View
@@ -241,6 +219,7 @@ class App extends React.Component {
                                 activePanel={getActivePanel("home")}
                                 history={history}
                                 onSwipeBack={() => goBack()}
+                                onTransition={this.restorePanelScroll}
                             >
                                 <Home id="home_tab"/>
 
@@ -249,17 +228,7 @@ class App extends React.Component {
                                 <TOP_Student id="top_student"/>
 
                                 <Timetable id="timetable"/>
-                                <Timetable_Group_1 id="group_1"/>
-                                <Timetable_Group_2 id="group_2"/>
-                                <Timetable_Group_3 id="group_3"/>
-                                <Timetable_Group_4 id="group_4"/>
-                                <Timetable_Group_5 id="group_5"/>
-                                <Timetable_Group_6 id="group_6"/>
-                                <Timetable_Group_7 id="group_7"/>
-                                <Timetable_Group_8 id="group_8"/>
-                                <Timetable_Group_9 id="group_9"/>
-                                <Timetable_Group_10 id="group_10"/>
-                                <Timetable_Group_11 id="group_11"/>
+                                {timetableGroups.map(group => <GroupSchedule key={group.id} id={group.id} group={group}/>)}
 
                                 <Schedule id="schedule"/>
 
@@ -300,6 +269,7 @@ class App extends React.Component {
                                 activePanel={getActivePanel("news")}
                                 history={history}
                                 onSwipeBack={() => goBack()}
+                                onTransition={this.restorePanelScroll}
                             >
                                 <News id="news_tab"/>
                             </View>
@@ -312,6 +282,7 @@ class App extends React.Component {
                                 activePanel={getActivePanel("service")}
                                 history={history}
                                 onSwipeBack={() => goBack()}
+                                onTransition={this.restorePanelScroll}
                             >
                                 <Service id="service_tab"/>
 
@@ -328,10 +299,14 @@ class App extends React.Component {
                                 activePanel={getActivePanel("profile")}
                                 history={history}
                                 onSwipeBack={() => goBack()}
+                                onTransition={this.restorePanelScroll}
                             >
                                 <Profile id='profile_tab'/>
 
                                 <Settings id="settings"/>
+                                <Debug id="debug"/>
+                                <DebugPremium id="debug_premium"/>
+                                <DebugAchievements id="debug_achievements"/>
 
                                 <Donate id="donate"/>
 
@@ -349,6 +324,7 @@ class App extends React.Component {
                             </View>
                         </Root>
                     </Epic>
+                    <AchievementTracker/>
                 </AppRoot>
             </ConfigProvider>
         );
@@ -359,7 +335,8 @@ const mapStateToProps = (state) => {
     return {
         activeView: state.router.activeView,
         activeStory: state.router.activeStory,
-        panelsHistory: state.router.panelsHistory,
+        activePanel: state.router.activePanel,
+        swipeBackHistory: state.router.swipeBackHistory,
         activeModals: state.router.activeModals,
         popouts: state.router.popouts,
         scrollPosition: state.router.scrollPosition,
@@ -372,7 +349,7 @@ const mapStateToProps = (state) => {
 function mapDispatchToProps(dispatch) {
     return {
         dispatch,
-        ...bindActionCreators({setStory, goBack, closeModal}, dispatch)
+        ...bindActionCreators({setStory, goBack, closeModal, handleHistoryChange}, dispatch)
     }
 }
 

@@ -3,36 +3,40 @@ import VKConnect from "@vkontakte/vk-bridge";
 import {store} from "../../index";
 
 import {setColorScheme, setAccessToken} from "../store/vk/actions";
+import {getCurrentAppId, sendBridgeRequest} from './bridge';
 
-const APP_ID = 7469712;
 const API_VERSION = '5.92';
 
 export const initApp = () => (dispatch) => {
     const VKConnectCallback = (e) => {
         if (e.detail.type === 'VKWebAppUpdateConfig') {
-            VKConnect.unsubscribe(VKConnectCallback);
-
-            dispatch(setColorScheme(e.detail.data.scheme));
+            const {scheme, appearance} = e.detail.data;
+            dispatch(setColorScheme(scheme || (appearance === 'dark' ? 'space_gray' : 'bright_light')));
         }
     };
 
     VKConnect.subscribe(VKConnectCallback);
-    return VKConnect.send('VKWebAppInit', {}).then(data => {
-        return data;
-    }).catch(error => {
-        return error;
-    });
+    if (VKConnect.isEmbedded()) {
+        sendBridgeRequest('VKWebAppInit').catch(() => {
+            // Static college information remains available if VK initialization fails.
+            // Actions requiring VK report their own request errors to the user.
+            console.warn('Не удалось инициализировать VK Bridge.');
+        });
+    }
+
+    return () => VKConnect.unsubscribe(VKConnectCallback);
 };
 
-export const getAuthToken = (scope) => (dispatch) => {
-    VKConnect.send("VKWebAppGetAuthToken", {
-        "app_id": APP_ID,
-        "scope": scope.join(',')
-    }).then(data => {
+export const getAuthToken = (scope) => async (dispatch) => {
+    try {
+        const appId = await getCurrentAppId();
+        const data = await sendBridgeRequest('VKWebAppGetAuthToken', {
+            app_id: appId, scope: scope.join(',')
+        }, 60000);
         dispatch(setAccessToken(data.access_token));
-    }).catch(() => {
+    } catch (error) {
         dispatch(setAccessToken(null));
-    });
+    }
 };
 
 export const closeApp = () => {

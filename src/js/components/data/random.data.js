@@ -1,3 +1,5 @@
+// Исходные ссылки сохранены для восстановления недоступных мемов.
+// Активные файлы и постоянные ID истории просмотров указаны в local-memes.data.json.
 export const images_memes = [
         { memes: "https://sun9-22.userapi.com/impg/ONF9CoIEhA55DoJI3Mhb65FsxquoHeBM5-7P2Q/6W-znH3j-tw.jpg?size=750x544&quality=96&sign=98ee6849d33b22259d874a935b05cb3f&type=album" }, //0
         { memes: "https://sun9-41.userapi.com/impg/lqMvwFXSqBFtjro8B2XcexBEYDbPqY3qVkeabg/-p2ISW8PbbQ.jpg?size=633x874&quality=96&sign=51c54e41898ff4571a00084b4dfba463&type=album" },

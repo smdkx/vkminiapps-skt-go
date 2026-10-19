@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 
 import {closePopout, goBack, openModal, openPopout, setPage} from '../store/router/actions';
+import {isPremium, shouldShowBanners} from '../store/premium';
 
 //import bridge from '@vkontakte/vk-bridge';
 
@@ -19,7 +20,8 @@ import {
     Button,
     Card,
     Div,
-    Avatar
+    Avatar,
+    Tappable
 } from "@vkontakte/vkui";
 
 import { 
@@ -84,7 +86,6 @@ import {
 />}
  */
 
- var currentDate = moment().format("DD MMMM, dddd");
  var BannerWelcome = true; //баннер рекламы
  var BannerUpdate = true; //баннер обновления
 
@@ -102,13 +103,14 @@ class Home extends React.Component {
     }
 
     render() {
-        const {id, setPage} = this.props;
+        const {id, setPage, showBanners, activePremium} = this.props;
+        const currentDate = moment().format("DD MMMM, dddd");
 
         return (
             <Panel id={id}>
                 <PanelHeader
                 before={
-                    <PanelHeaderButton onClick={() => this.props.openModal('MODAL_PAGE_FAQ')}>
+                    <PanelHeaderButton aria-label="Справка о приложении" onClick={() => this.props.openModal('MODAL_PAGE_FAQ')}>
                         <Icon28InfoOutline />
                     </PanelHeaderButton>
                 }
@@ -116,7 +118,7 @@ class Home extends React.Component {
                     Главная
                 </PanelHeader>
 
-                {this.state.BannerUpdateStatus && <Banner
+                {showBanners && (!activePremium || this.state.BannerUpdateStatus) && <Banner
                     mode="image"
                     size="m"
                     header="Мы обновились!"
@@ -124,16 +126,15 @@ class Home extends React.Component {
                     background={
                         <div
                             style={{
-                                backgroundColor: '#5b9be6',
-                                backgroundImage: 'url(https://sun9-31.userapi.com/PQ4UCzqE_jue9hAINefBMorYCdfGXvcuV5nSjA/eYugcFYzdW8.jpg)',
-                                backgroundPosition: 'right bottom',
-                                backgroundSize: '102%',
-                                backgroundRepeat: 'no-repeat',
+                                backgroundColor: '#215db0',
+                                backgroundImage: 'linear-gradient(120deg, #215db0, #244c83)',
                             }}
                         />
                         }
-                    asideMode="dismiss"
+                    asideMode={activePremium ? 'dismiss' : undefined}
+                    dismissLabel="Скрыть баннер об обновлениях"
                     onDismiss={() => {
+                        if (!this.props.activePremium) return;
                         this.setState({
                             BannerUpdateStatus: false
                         });
@@ -146,31 +147,31 @@ class Home extends React.Component {
 
                 <Div>
                     <Card size="l" mode="shadow">
-                        <div className="CustomBanner">
+                        <div className="CustomBanner HomeNotice">
                         <div className="CustomBanner__aside">
                             <Avatar size={28} style={{ backgroundImage: 'linear-gradient(90deg, #ffb73d 0%, #ffa000 100%)' }}>
                                 <span style={{ color: '#fff' }}>!</span>
                             </Avatar>
                             </div>
                             <div className="CustomBanner__main">
-                                <div className="CustomBanner__header">Системное сообщение</div>
-                                <div className="CustomBanner__subheader">Приложение временно прекратило свою поддержку. Актуальность информации сохраняется на 2024 год.</div>
+                                <div className="CustomBanner__header">Перед использованием</div>
+                                <div className="CustomBanner__subheader">В приложении есть архивные материалы. Расписание занятий сохранено за 2021/2022 учебный год — актуальные даты и время уточняйте в колледже.</div>
                             </div>
                         </div>
                     </Card>
                 </Div>
 
-                <Div onClick={() => setPage('home', 'feedback')}>
+                {showBanners && <Div>
                     <Card size="l" mode="shadow">
-                        <div className="FeedbackBanner">
+                        <Tappable Component="button" type="button" className="FeedbackBanner" onClick={() => setPage('home', 'feedback')}>
                             <div className="FeedbackBanner__main">
                                 <div className="FeedbackBanner__header">Вам слово</div>
                                 <div className="FeedbackBanner__subheader">Поделитесь впечатлениями о приложении или идеями, как его можно улучшить</div>
                             </div>
                             <div className="FeedbackBanner__aside">{<Icon24Chevron/>}</div>
-                        </div>
+                        </Tappable>
                     </Card>
-                </Div>
+                </Div>}
 
                 <Div>
                     <Card size="l" mode="shadow">
@@ -192,6 +193,8 @@ class Home extends React.Component {
                         <Card size="l" mode="shadow">
                             <SimpleCell
                             before={<Icon28EducationOutline/>} 
+                            subtitle="Архив за 2021/2022 учебный год"
+                            multiline
                             onClick={() => setPage('home', 'timetable')}
                             >
                                 Расписание занятий
@@ -199,6 +202,7 @@ class Home extends React.Component {
 
                             <SimpleCell 
                             before={<Icon28CalendarOutline/>} 
+                            subtitle="Сохранённая версия"
                             onClick={() => setPage('home', 'schedule')}
                             >
                                 Расписание звонков
@@ -222,7 +226,10 @@ class Home extends React.Component {
                             before={<Icon28UserStarBadgeOutline/>} 
                             onClick={() => setPage('home', 'top_student')}
                             >
-                                Топ студентов <span className="block__new">NEW</span>
+                                <span className="title-with-badge">
+                                    <span className="title-with-badge__text">Топ студентов</span>
+                                    <span className="block__new">NEW</span>
+                                </span>
                             </SimpleCell>
 
                             <SimpleCell 
@@ -253,7 +260,10 @@ class Home extends React.Component {
                             before={<Icon28LogoVkOutline/>} 
                             href='https://vk.com/skt_club' target="_blank"
                             >
-                                Качественный контент <span className="block__hot">HOT</span>
+                                <span className="title-with-badge">
+                                    <span className="title-with-badge__text">Качественный контент</span>
+                                    <span className="block__hot">HOT</span>
+                                </span>
                             </SimpleCell>
 
                             <SimpleCell
@@ -280,6 +290,9 @@ class Home extends React.Component {
                 <Group header={<Header mode="secondary">Ссылки</Header>}>
                     <Div>
                         <Card size="l" mode="shadow">
+                            {!showBanners && <SimpleCell expandable onClick={() => setPage('home', 'feedback')}>
+                                Обратная связь
+                            </SimpleCell>}
                             <SimpleCell
                             expandable = 'true'
                             subtitle='collegetel.ru'
@@ -315,4 +328,4 @@ const mapDispatchToProps = {
     openModal
 };
 
-export default connect(null, mapDispatchToProps)(Home);
+export default connect(state => ({showBanners: shouldShowBanners(state), activePremium: isPremium(state)}), mapDispatchToProps)(Home);

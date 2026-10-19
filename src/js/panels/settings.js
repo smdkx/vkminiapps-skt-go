@@ -1,9 +1,13 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
-import {goBack, setPage} from "../store/router/actions";
+import {goBack} from "../store/router/actions";
+import {earnAchievement} from '../store/achievements';
+import {hapticNotification} from '../services/bridge';
+import {isPremium, loadBannerSettings, saveBannerSettings} from '../store/premium';
 
-import bridge from '@vkontakte/vk-bridge';
+import {loadStudentSettings, saveStudentSettings} from '../store/studentSettings';
+import {studentGroups, collegeDepartments, normalizeStudentGroup, isValidStudentGroup} from '../components/data/education.data';
 
 import {
     Panel,
@@ -14,6 +18,7 @@ import {
     Button,
     FormItem,
     NativeSelect,
+    PanelSpinner,
     Snackbar,
     Avatar,
     Header,
@@ -23,7 +28,6 @@ import {
 } from "@vkontakte/vkui";
 
 import {
-    Icon16ErrorCircleOutline,
     Icon28HideOutline
 } from "@vkontakte/icons";
 
@@ -34,28 +38,117 @@ class Settings extends React.Component {
 
         this.state = {
             snackbar: null,
-            loader: false,
+            group: '',
+            department: '',
+            ready: false,
         };
 
-        this.openSnackbar = this.openSnackbar.bind(this);
+        this.earnEasterEgg = this.earnEasterEgg.bind(this);
+        this.mounted = false;
+        this.easterEggPending = false;
+        this.settingsPending = false;
     }
 
-    openSnackbar () {
-        bridge.send("VKWebAppTapticNotificationOccurred", {"type": "error"}); //вибро
-        if (this.state.snackbar) return;
-        this.setState({ snackbar:
-          <Snackbar
-            layout='vertical'
-            onClose={() => this.setState({ snackbar: null })}
-            before={<Avatar size={24} style={{ background: 'red' }}><Icon16ErrorCircleOutline fill="#fff" width={14} height={14} /></Avatar>}
-          >
-              А, ой, что-то пошло не так. Настройки не были сохранены.
-          </Snackbar>
-        });
-      }
+    componentDidMount() {
+        this.mounted = true;
+        this.loadSettings();
+        this.loadBannerSettings();
+    }
+
+    componentWillUnmount() {
+        this.mounted = false;
+    }
+
+    async earnEasterEgg() {
+        if (this.easterEggPending || this.props.easterEggEarnedAt) return;
+        this.easterEggPending = true;
+        let message;
+        try {
+            await this.props.earnAchievement('easteregg');
+            message = 'Достижение «Пасхалка» получено!';
+            if (this.mounted) hapticNotification('success');
+        } catch (error) {
+            message = 'Не удалось сохранить достижение.';
+        } finally {
+            this.easterEggPending = false;
+        }
+        if (this.mounted) this.setState({snackbar: <Snackbar layout="vertical" onClose={() => {
+            if (this.mounted) this.setState({snackbar: null});
+        }}>{message}</Snackbar>});
+    }
+
+    showMessage = message => {
+        if (this.mounted) this.setState({snackbar: <Snackbar layout="vertical" onClose={() => {
+            if (this.mounted) this.setState({snackbar: null});
+        }}>{message}</Snackbar>});
+    };
+
+    loadBannerSettings = () => this.props.loadBannerSettings().catch(() => {
+        this.showMessage('Не удалось загрузить настройку баннеров.');
+    });
+
+    changeBanners = async event => {
+        if (!this.props.activePremium) {
+            this.showPremiumRequired(event);
+            return;
+        }
+        const showBanners = event.target.checked;
+        try {
+            await this.props.saveBannerSettings(showBanners);
+            this.showMessage('Настройка сохранена.');
+        } catch (error) {
+            this.showMessage('Не удалось сохранить настройку.');
+        }
+    };
+
+    showPremiumRequired = event => {
+        if (event) event.preventDefault();
+        const {checking, subscribed} = this.props.premium;
+        this.showMessage(checking ? 'Проверяем Premium…' : subscribed === null
+            ? 'Не удалось проверить Premium.' : 'Доступно с Premium.');
+    };
+
+    loadSettings = async () => {
+        try {
+            const {group, department} = await this.props.loadStudentSettings();
+            if (this.mounted) this.setState({group, department, ready: true});
+        } catch (error) {
+            this.showMessage('Не удалось загрузить настройки.');
+        }
+    };
+
+    changeGroup = event => {
+        this.setState({group: event.target.value});
+    };
+
+    saveSettings = async () => {
+        if (this.settingsPending || !this.state.ready || this.props.studentSettings.saving) return;
+        const group = normalizeStudentGroup(this.state.group);
+        if (!isValidStudentGroup(group) || (group && !studentGroups.includes(group))) {
+            this.showMessage('Выберите группу из архива расписаний.');
+            return;
+        }
+        this.settingsPending = true;
+        if (this.mounted) this.setState({snackbar: null});
+        try {
+            const saved = await this.props.saveStudentSettings({group, department: this.state.department});
+            if (this.mounted) this.setState({group: saved.group});
+            this.showMessage('Настройки сохранены.');
+            if (this.mounted) hapticNotification('success');
+        } catch (error) {
+            this.showMessage('Не удалось сохранить настройки.');
+        } finally {
+            this.settingsPending = false;
+        }
+    };
 
     render() {
-        const {id, goBack, setPage} = this.props;
+        const {id, goBack, studentSettings, premium, activePremium} = this.props;
+        const {group, department, ready} = this.state;
+        const {loading, saving} = studentSettings;
+        const disabled = !ready || loading || saving;
+        const legacyGroup = group !== '' && !studentGroups.includes(group);
+        const changed = normalizeStudentGroup(group) !== studentSettings.group || department !== studentSettings.department;
 
         return (
             <Panel id={id}>
@@ -74,9 +167,9 @@ class Settings extends React.Component {
                             </Avatar>
                             </div>
                             <div className="CustomBanner__main">
-                                <div className="CustomBanner__header">Временные неполадки</div>
-                                <div className="CustomBanner__subheader">При сохранении настроек может появиться ошибка. Если это так – попробуйте зайти позже. Проблема известна, работаем над ее решением.</div>
-                                <Button mode="tertiary" target="_blank" style={{paddingbefore: 4, paddingRight: 4}} href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Перезагрузить сервер</Button>
+                                <div className="CustomBanner__header">Профиль студента</div>
+                                <div className="CustomBanner__subheader">Выберите группу и отделение, чтобы они отображались в профиле.</div>
+                                <Button mode="tertiary" target="_blank" rel="noopener noreferrer" onClick={this.earnEasterEgg} style={{paddingbefore: 4, paddingRight: 4}} href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Перезагрузить сервер</Button>
                             </div>
                         </div>
                     </Card>
@@ -85,14 +178,22 @@ class Settings extends React.Component {
                 <Group header={<Header mode='secondary'>Внешний вид</Header>}>
                     <Div>
                         <Card size="l" mode="shadow">
-                            <SimpleCell
-                            disabled
-                            after={<Switch defaultChecked disabled/>}
+                            <SimpleCell Component={activePremium ? 'label' : 'div'} multiline
+                            onClick={activePremium ? undefined : this.showPremiumRequired}
+                            disabled={activePremium && (!premium.preferencesLoaded || premium.saving)}
+                            after={<Switch aria-label="Отображение баннеров" checked={!activePremium || premium.showBanners}
+                                onChange={this.changeBanners}
+                                style={!activePremium ? {pointerEvents: 'none'} : undefined}
+                                disabled={!activePremium || !premium.preferencesLoaded || premium.saving}/>}
                             before={<Icon28HideOutline />}
-                            subtitle="Доступно Premium пользователям"
+                            subtitle={premium.saving ? 'Сохраняем…' : activePremium
+                                ? 'Обновления, предложения и объявления' : 'Доступно с Premium'}
                             >
                                 Отображение баннеров
                             </SimpleCell>
+                            {activePremium && !premium.preferencesLoaded && <Div><Button mode="secondary" onClick={this.loadBannerSettings}>
+                                Загрузить настройку баннеров
+                            </Button></Div>}
                         </Card>
                     </Div>
                 </Group>
@@ -106,52 +207,33 @@ class Settings extends React.Component {
                                 </NativeSelect>
                             </FormItem>
 
-                            <FormItem top="Факультет">
-                                <NativeSelect disabled>
-                                <option>Не выбрано</option>
+                            {loading && <PanelSpinner aria-label="Загрузка настроек"/>}
+                            <FormItem top={<label htmlFor="settings-department">Отделение</label>}>
+                                <NativeSelect id="settings-department" aria-label="Отделение" value={department}
+                                    disabled={disabled} onChange={event => this.setState({department: event.target.value})}>
+                                    <option value="">Не выбрано</option>
+                                    {collegeDepartments.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
                                 </NativeSelect>
                             </FormItem>
 
-                            <FormItem top="Группа">
-                                <NativeSelect>
-                                <option>Выберите группу</option>
-                                <option>М9218</option>
-                                <option>С9118</option>
-                                <option>СП9318</option>
-                                <option>СПу9418</option>
-                                <option>КС9419</option>
-                                <option>КС9518</option>
-                                <option>КС9520</option>
-                                <option>ПКС9620</option>
-                                <option>ИСП9920/1</option>
-                                <option>ПКС9720</option>
-                                <option>ИСП9920/2</option>
-                                <option>КС11519</option>
-                                <option>КС11618</option>
-                                <option>КС9517</option>
-                                <option>М11320</option>
-                                <option>ПКС9617</option>
-                                <option>ПКС9717</option>
-                                <option>ПКС9619</option>
-                                <option>ПКС9718</option>
-                                <option>ПКС11819</option>
-                                <option>ПКС9818</option>
-                                <option>ПКС11919</option>
-                                <option>ПКС9719</option>
-                                <option>С9119</option>
-                                <option>М9219</option>
-                                <option>СП9319</option>
-                                <option>С9120</option>
-                                <option>М9220</option>
-                                <option>СП9420</option>
+                            <FormItem top={<label htmlFor="settings-group">Группа</label>}
+                                bottom={legacyGroup ? 'Для сохранённой группы нет расписания. Выберите группу из архива или «Не выбрана».'
+                                    : 'Группы из архива расписаний за 2021/2022 учебный год.'}>
+                                <NativeSelect id="settings-group" aria-label="Группа" value={group}
+                                    disabled={disabled} onChange={this.changeGroup}>
+                                    <option value="">Не выбрана</option>
+                                    {legacyGroup && <option value={group} disabled>{group} — сохранена ранее</option>}
+                                    {studentGroups.map(item => <option key={item} value={item}>{item}</option>)}
                                 </NativeSelect>
                             </FormItem>
                         </Card>
                     </Div>
                 </Group>
 
-                <Div style={{display: 'flex'}}>
-                    <Button onClick={() => setPage('profile', 'sasha')} size="l" stretched style={{ marginRight: 8 }}>Сохранить настройки</Button>
+                <Div>
+                    {!ready && !loading ? <Button onClick={this.loadSettings} size="l" stretched>Повторить загрузку</Button> :
+                        <Button onClick={this.saveSettings} size="l" stretched loading={saving}
+                            disabled={disabled || !changed || legacyGroup}>{saving ? 'Сохраняем…' : 'Сохранить настройки'}</Button>}
                 </Div>
 
                 {this.state.snackbar}
@@ -163,7 +245,16 @@ class Settings extends React.Component {
 }
 const mapDispatchToProps = {
     goBack,
-    setPage
+    earnAchievement,
+    loadStudentSettings,
+    saveStudentSettings,
+    loadBannerSettings,
+    saveBannerSettings
 };
 
-export default connect(null, mapDispatchToProps)(Settings);
+export default connect(state => ({
+    easterEggEarnedAt: state.achievements.earned.easteregg,
+    studentSettings: state.studentSettings,
+    premium: state.premium,
+    activePremium: isPremium(state),
+}), mapDispatchToProps)(Settings);

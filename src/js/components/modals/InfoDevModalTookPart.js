@@ -1,20 +1,22 @@
 import React from 'react';
+import UserAvatar from '../UserAvatar';
+import useUserPhotos from '../../hooks/useUserPhotos';
+
 import {connect} from 'react-redux';
 
 import {
-    ModalPage, 
-    ModalPageHeader, 
-    PanelHeaderButton, 
-    withPlatform, 
-    IOS, 
+    ModalPage,
+    ModalPageHeader,
+    PanelHeaderButton,
+    withPlatform,
+    IOS,
     Div,
     Group,
     SimpleCell,
-    Card,
-    Avatar
+    Card
 } from "@vkontakte/vkui";
 
-import { 
+import {
     Icon24Dismiss,
     Icon24Cancel,
     Icon20DonateCircleFillYellow
@@ -30,87 +32,78 @@ const numericIndicator = {
     boxShadow: '0 4px 24px 0 rgb(0 0 0 / 8%), 0 0 12px 0 rgb(0 0 0 / 8%)',
 }
 
-class InfoDevModalTookPart extends React.Component {
+const userIds = [167786810, 142033810];
 
-    constructor(props) {
-        super(props);
+function InfoDevModalTookPart({id, onClose, platform, active}) {
+    const {photos} = useUserPhotos(userIds, active);
 
-        this.state = {
-            device: ''
-        };
+    return (
+        <ModalPage
+            id={id}
+            header={
+                <ModalPageHeader
+                    before={platform !== IOS &&
+                        <PanelHeaderButton aria-label="Закрыть окно" onClick={onClose}>
+                            <Icon24Cancel/>
+                        </PanelHeaderButton>}
 
-    }
+                    after={platform === IOS &&
+                        <PanelHeaderButton aria-label="Закрыть окно" onClick={onClose}>
+                            <Icon24Dismiss/>
+                        </PanelHeaderButton>}
+                >
+                    Приняли участие
+                </ModalPageHeader>
+            }
+            onClose={() => {
+                onClose();
+                //document.body.style.overflow = 'auto';
+            }}
+            settlingHeight={100}
+        >
+            <Div>
+                <Group>
+                    <Card size="l" mode="shadow">
+                        <SimpleCell
+                        expandable = 'true'
+                        href="https://vk.com/id167786810" target="_blank"
+                        before={
+                        <div className="Avatar__photo">
+                            <UserAvatar src={photos[167786810]} name="Андрей Харитонов"/>
+                            <div className="Avatar__indicator" >
+                                <Icon20DonateCircleFillYellow style={numericIndicator} />
+                            </div>
+                        </div>
+                        }
+                        subtitle='Memes generator'
+                        >
+                            Андрей Харитонов
+                        </SimpleCell>
 
-    render() {
-        const {id, onClose, platform} = this.props;
-
-        return (
-            <ModalPage
-                id={id}
-                header={
-                    <ModalPageHeader
-                        before={platform !== IOS &&
-                            <PanelHeaderButton onClick={onClose}>
-                                <Icon24Cancel/>
-                            </PanelHeaderButton>}
-
-                        after={platform === IOS &&
-                            <PanelHeaderButton onClick={onClose}>
-                                <Icon24Dismiss/>
-                            </PanelHeaderButton>}
-                    >
-                        Приняли участие
-                    </ModalPageHeader>
-                }
-                onClose={() => {
-                    onClose();
-                    //document.body.style.overflow = 'auto';
-                }}
-                settlingHeight={100}
-            >
-                <Div>
-                    <Group>
-                        <Card size="l" mode="shadow">
-                            <SimpleCell
-                            expandable = 'true'
-                            href="https://vk.com/id167786810" target="_blank"
-                            before={
+                        <SimpleCell
+                        expandable = 'true'
+                        href="https://vk.com/id142033810" target="_blank"
+                        before={
                             <div className="Avatar__photo">
-                                <Avatar size={48} src={"https://sun136-1.userapi.com/s/v1/if2/DTOIjd_si5Wi42AWsrkx7QzqArrv1d933u9RN23EZZBwpT3EBkMPCr9gmHRUt-qdRFBLTtXT4_SkRKPffP_do4gy.jpg?quality=95&crop=26,0,835,835&as=50x50,100x100,200x200,400x400&ava=1&u=WQiyUHYp0GsWN1eWFIvu5e4m1c-oORsJqCXKMkfxPJs&cs=200x200"} />
+                                <UserAvatar src={photos[142033810]} name="Александр Макаров"/>
                                 <div className="Avatar__indicator" >
                                     <Icon20DonateCircleFillYellow style={numericIndicator} />
                                 </div>
                             </div>
-                            }
-                            subtitle='Memes generator'
-                            >
-                                Андрей Харитонов
-                            </SimpleCell>
-
-                            <SimpleCell
-                            expandable = 'true'
-                            href="https://vk.com/id142033810" target="_blank"
-                            before={
-                                <div className="Avatar__photo">
-                                    <Avatar size={48} src={"https://sun136-2.userapi.com/s/v1/if2/HLkSlW2YQLpC7C0CM_8My2UJQigGp2-940Qr7U7q-H2CnPDmQ0MvLBtxfNetQTRVhKi1zsOtsLfkxx5vboXXb6aD.jpg?quality=95&crop=316,429,1036,1036&as=50x50,100x100,200x200,400x400&ava=1&u=WufiXWhllfVsDbgdq7ivFRImaN-1GHzdkTMQSqBggts&cs=200x200"} />
-                                    <div className="Avatar__indicator" >
-                                        <Icon20DonateCircleFillYellow style={numericIndicator} />
-                                    </div>
-                                </div>
-                            }
-                            subtitle='Не пытается починить настройки'
-                            >
-                                Александр Макаров
-                            </SimpleCell>
-                        </Card>
-                    </Group>
-                    {this.state.device !== 'mobile_iphone' && <div style={{ width: '100%', textAlign: 'center', marginTop: 8 }}>
-                    </div>}
-                </Div>
-            </ModalPage>
-        );
-    }
-
+                        }
+                        subtitle='Не пытается починить настройки'
+                        >
+                            Александр Макаров
+                        </SimpleCell>
+                    </Card>
+                </Group>
+            </Div>
+        </ModalPage>
+    );
 }
 
-export default withPlatform(connect()(InfoDevModalTookPart));
+const mapStateToProps = ({router}, ownProps) => ({
+    active: router.activeModals[router.activeView] === ownProps.id,
+});
+
+export default withPlatform(connect(mapStateToProps)(InfoDevModalTookPart));

@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 
 import {setPage, openPopout, closePopout} from "../store/router/actions";
+import {isPremium, shouldShowBanners} from '../store/premium';
 
 import bridge from '@vkontakte/vk-bridge'
 
@@ -118,7 +119,7 @@ class Other extends React.Component {
             <Panel id={id}>
                 <PanelHeader>Сервисы</PanelHeader>
                 
-                {this.state.BannerNewStatus && <Banner
+                {this.props.showBanners && (!this.props.activePremium || this.state.BannerNewStatus) && <Banner
                     mode="image"
                     size="m"
                     header="Что-то новенькое! &#127881;"
@@ -134,8 +135,9 @@ class Other extends React.Component {
                         }}
                     />
                     }
-                    asideMode="dismiss"
+                    asideMode={this.props.activePremium ? 'dismiss' : undefined}
                     onDismiss={() => {
+                        if (!this.props.activePremium) return;
                         this.setState({
                             BannerNewStatus: false
                         });
@@ -232,4 +234,4 @@ const mapDispatchToProps = {
     closePopout
 };
 
-export default connect(null, mapDispatchToProps)(Other);
+export default connect(state => ({showBanners: shouldShowBanners(state), activePremium: isPremium(state)}), mapDispatchToProps)(Other);

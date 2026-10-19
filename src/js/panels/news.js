@@ -1,83 +1,63 @@
 import React from 'react';
-import {connect} from 'react-redux';
-
-import { newsData } from '../components/data/news.data'
-
-import {setPage} from "../store/router/actions";
-
+import moment from 'moment';
+import 'moment/locale/ru';
 import {
-    Panel,
-    PanelHeader,
-    PanelHeaderButton,
-    Group,
-    ContentCard,
-    Div,
-    Placeholder
-} from "@vkontakte/vkui";
+    Card, Div, Group, Header, Panel, PanelHeader,
+    Placeholder, SimpleCell, Text, Title,
+} from '@vkontakte/vkui';
+import {Icon28LogoVkOutline} from '@vkontakte/icons';
+import {newsData} from '../components/data/news.data';
 
-import { 
-    Icon28TextLiveOutline
- } from '@vkontakte/icons';
-
-import img_plug from '../../img/img_plug_3.png';
-
-class News extends React.Component {
-
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            snackbar: null,
-            loader: false,
-        };
-    }
-
-    render() {
-        const {id} = this.props;
-
-        return (
-
-            <Panel id={id}>
-                <PanelHeader
-                before={
-                    <PanelHeaderButton href='https://vk.com/sktnews' target="_blank">
-                        <Icon28TextLiveOutline />
-                    </PanelHeaderButton>
-                }
-                >
-                    Новости
-                </PanelHeader>
-
-                <Group>
-                    {newsData.length ? newsData.toReversed().map(newsData => (
-                    <Div key={newsData.id}>
-                        <ContentCard
-                        src={newsData.image}
-                        subtitle="Системная запись"
-                        text={newsData.text}
-                        caption={newsData.date}
-                        maxHeight={100}
-                        />
-                    </Div>
-                    )) :         
-                    <Group>
-                        <img className="news" src={img_plug} alt="news" style={{ marginTop: 100 }}/>
-                        <Placeholder
-                        header="Новости не найдены"
-                        >
-                            К сожалению, новостей пока нет или они не были найдены.
-                        </Placeholder>
-                    </Group>
-                    }
-                </Group>
-            </Panel>
-        );
-    }
-
+function NewsArticle({entry, featured = false}) {
+    return <Div className="NewsFeed__item">
+        <Card mode="outline" className={`NewsCard${featured ? ' NewsCard--latest' : ''}`}>
+            <article className="NewsCard__body" aria-labelledby={`news-title-${entry.id}`}>
+                <time className="NewsCard__date" dateTime={entry.date.format('YYYY-MM-DD')}>
+                    {entry.date.format('D MMMM YYYY')}
+                </time>
+                <Title Component={featured ? 'h2' : 'h3'} level="2" weight="2"
+                    id={`news-title-${entry.id}`} className="NewsCard__title">{entry.title}</Title>
+                <Text Component="p" className="NewsCard__text">{entry.text}</Text>
+            </article>
+        </Card>
+    </Div>;
 }
 
-const mapDispatchToProps = {
-    setPage
-};
+export default function News({id}) {
+    const entries = [...newsData].reverse().map(entry => ({...entry, date: moment(entry.date, 'DD.MM.YY')}));
+    const archive = entries.slice(1).reduce((groups, entry) => {
+        const year = entry.date.year();
+        let group = groups[groups.length - 1];
+        if (!group || group.year !== year) {
+            group = {year, entries: []};
+            groups.push(group);
+        }
+        group.entries.push(entry);
+        return groups;
+    }, []);
 
-export default connect(null, mapDispatchToProps)(News);
+    return (
+        <Panel id={id}>
+            <PanelHeader>Новости</PanelHeader>
+            <Group className="NewsFeed">
+                <Div className="NewsFeed__source">
+                    <Card mode="shadow">
+                        <SimpleCell multiline className="NewsFeed__sourceLink"
+                            before={<Icon28LogoVkOutline/>} subtitle="Сообщество во ВКонтакте"
+                            href="https://vk.com/sktnews" aria-label="Перейти в SKT News во ВКонтакте"
+                            target="_blank" rel="noopener noreferrer"
+                        >SKT News</SimpleCell>
+                    </Card>
+                </Div>
+                {entries.length ? <React.Fragment>
+                    <Header mode="secondary">Последняя запись</Header>
+                    <NewsArticle entry={entries[0]} featured/>
+                    {archive.map(group => <section key={group.year} aria-label={`Обновления за ${group.year} год`}>
+                        <Header mode="secondary">{group.year}</Header>
+                        {group.entries.map(entry => <NewsArticle key={entry.id} entry={entry}/>)}
+                    </section>)}
+                </React.Fragment> : <Placeholder header="Новостей пока нет">Когда появятся записи об обновлениях, они будут здесь.</Placeholder>}
+            </Group>
+        </Panel>
+    );
+}
