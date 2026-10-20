@@ -15,23 +15,42 @@ const callAPI = async (method, params, accessToken) => {
     return data.response;
 };
 
+const requestAccessToken = async appId => {
+    const auth = await sendBridgeRequest('VKWebAppGetAuthToken', {app_id: appId, scope: ''}, 60000);
+    if (!auth || typeof auth.access_token !== 'string' || !auth.access_token) throw invalidResponse();
+    return auth.access_token;
+};
+
+const readSubscription = async accessToken => {
+    // Resolve the subscription link's community rather than assuming an old numeric ID is current.
+    const owner = await callAPI('utils.resolveScreenName', {screen_name: COMMUNITY}, accessToken);
+    if (!owner || owner.type !== 'group' || !Number.isInteger(owner.object_id) || owner.object_id <= 0) {
+        throw invalidResponse();
+    }
+    const subscribed = await callAPI('donut.isDon', {owner_id: -owner.object_id}, accessToken);
+    if (subscribed !== 0 && subscribed !== 1) throw invalidResponse();
+    return subscribed === 1;
+};
+
 export const checkDonutSubscription = async () => {
     let stage = 'authorization';
     try {
         const appId = await getCurrentAppId();
-        const auth = await sendBridgeRequest('VKWebAppGetAuthToken', {app_id: appId, scope: ''}, 60000);
-        if (!auth || typeof auth.access_token !== 'string' || !auth.access_token) throw invalidResponse();
+        const accessToken = await requestAccessToken(appId);
 
         stage = 'subscription';
-        // Resolve the same community as the existing subscription link instead
-        // of assuming that an old numeric ID still belongs to teamskt.
-        const owner = await callAPI('utils.resolveScreenName', {screen_name: COMMUNITY}, auth.access_token);
-        if (!owner || owner.type !== 'group' || !Number.isInteger(owner.object_id) || owner.object_id <= 0) {
-            throw invalidResponse();
+        try {
+            return await readSubscription(accessToken);
+        } catch (error) {
+            if (!error || !error.error_data || error.error_data.error_code !== 5) throw error;
+            stage = 'authorization';
+            const renewedToken = await requestAccessToken(appId);
+            stage = 'subscription';
+            // The host may return its cached token. Do not reuse a known revoked token
+            // or keep opening authorization dialogs when VK cannot issue a replacement.
+            if (renewedToken === accessToken) throw error;
+            return await readSubscription(renewedToken);
         }
-        const subscribed = await callAPI('donut.isDon', {owner_id: -owner.object_id}, auth.access_token);
-        if (subscribed !== 0 && subscribed !== 1) throw invalidResponse();
-        return subscribed === 1;
     } catch (error) {
         // Preserve only the fields needed for a safe user-facing message.
         // API errors can include request_params containing the access token.
