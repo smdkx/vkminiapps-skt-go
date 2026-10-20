@@ -1,16 +1,14 @@
-import {getCurrentAppId, sendBridgeRequest} from './bridge';
+import {sendBridgeRequest} from './bridge';
 
 const CACHE_TIME = 5 * 60 * 1000;
 const RETRY_DELAY = 60 * 1000;
 const cache = new Map();
-let authRequest = null;
 
 export const getUserPhotosErrorMessage = error => {
     if (error.code === 'UNSUPPORTED_ENVIRONMENT') return 'Фотографии доступны во ВКонтакте.';
     if (error.code === 'UNSUPPORTED_METHOD') return 'Загрузка фотографий недоступна.';
     if (error.code === 'BRIDGE_TIMEOUT') return 'Сервер не ответил вовремя.';
-    if (error.stage === 'photos' && error.apiCode === 5) return 'Сервер отклонил токен доступа.';
-    if (error.stage === 'authorization') return 'Не удалось авторизоваться.';
+    if (error.apiCode === 5) return 'Не удалось получить фотографии из ВК.';
     if ([6, 9, 29].includes(error.apiCode)) return 'Слишком много запросов. Попробуйте позже.';
     return 'Не удалось загрузить фотографии.';
 };
@@ -24,45 +22,20 @@ const photoError = (error, stage) => {
     return Object.assign(new Error(getUserPhotosErrorMessage(safe)), safe);
 };
 
-const getAccessToken = () => {
-    if (!authRequest) {
-        const request = getCurrentAppId()
-            .then(appId => sendBridgeRequest('VKWebAppGetAuthToken', {app_id: appId, scope: ''}, 60000))
-            .then(auth => {
-                if (!auth || typeof auth.access_token !== 'string' || !auth.access_token) {
-                    throw new Error('VK не вернул токен доступа.');
-                }
-                return auth.access_token;
-            })
-            .finally(() => {
-                // Share only pending authorization; each new batch requests a current token.
-                if (authRequest === request) authRequest = null;
-            });
-        authRequest = request;
-    }
-    return authRequest;
-};
-
-const fetchPhotos = async (userIds, canRefreshToken = true) => {
-    let stage = 'authorization';
+const fetchPhotos = async (userIds) => {
     try {
-        const accessToken = await getAccessToken();
-        stage = 'photos';
-        const data = await sendBridgeRequest('VKWebAppCallAPIMethod', {
-            method: 'users.get',
-            params: {
-                user_ids: userIds.join(','),
-                fields: 'photo_100,photo_200',
-                access_token: accessToken,
-                v: '5.199',
-            },
+        const data = await sendBridgeRequest('VKWebAppGetUserInfo', {
+            user_ids: userIds.join(','),
         });
         if (data && data.error) throw Object.assign(new Error('VK отклонил запрос.'), {error_data: data.error});
-        if (!data || !Array.isArray(data.response)) throw new Error('Некорректный ответ VK.');
+        // Bridge returns a single profile for one ID, or {result: profiles} for a batch.
+        const users = userIds.length === 1 && data && data.id === userIds[0]
+            ? [data] : data && data.result;
+        if (!Array.isArray(users)) throw new Error('Некорректный ответ VK.');
 
         const requested = new Set(userIds);
         const photos = new Map();
-        data.response.forEach(user => {
+        users.forEach(user => {
             // Match by ID: response order and missing profiles must not mix up photos.
             if (!user || !requested.has(user.id)) return;
             const photo = user.deactivated ? null : user.photo_200 || user.photo_100 || null;
@@ -71,10 +44,7 @@ const fetchPhotos = async (userIds, canRefreshToken = true) => {
         });
         return photos;
     } catch (error) {
-        if (stage === 'photos' && error && error.error_data && error.error_data.error_code === 5 && canRefreshToken) {
-            return fetchPhotos(userIds, false);
-        }
-        throw photoError(error, stage);
+        throw photoError(error, 'photos');
     }
 };
 

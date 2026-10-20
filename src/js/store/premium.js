@@ -26,7 +26,8 @@ export const shouldShowBanners = state => !isPremium(state) || state.premium.sho
 export const setForcedPremium = enabled => ({type: UPDATE, payload: {forced: enabled === true}});
 export const setPremiumSubscription = subscribed => ({type: UPDATE, payload: {subscribed: subscribed === true}});
 
-export const checkPremiumSubscription = () => dispatch => {
+export const checkPremiumSubscription = () => (dispatch, getState) => {
+    if (getState().account.resetting) return Promise.reject(new Error('Выполняется сброс данных.'));
     if (checkRequest) return checkRequest;
     dispatch({type: UPDATE, payload: {checking: true}});
     checkRequest = checkDonutSubscription().then(subscribed => {
@@ -44,6 +45,7 @@ export const checkPremiumSubscription = () => dispatch => {
 };
 
 export const loadBannerSettings = () => (dispatch, getState) => {
+    if (getState().account.resetting) return Promise.reject(new Error('Выполняется сброс данных.'));
     if (saveRequest) return saveRequest;
     if (getState().premium.preferencesLoaded) return Promise.resolve(getState().premium.showBanners);
     if (loadRequest) return loadRequest;
@@ -58,6 +60,7 @@ export const loadBannerSettings = () => (dispatch, getState) => {
 };
 
 export const saveBannerSettings = showBanners => (dispatch, getState) => {
+    if (getState().account.resetting) return Promise.reject(new Error('Выполняется сброс данных.'));
     if (typeof showBanners !== 'boolean' || !isPremium(getState())) {
         return Promise.reject(new Error('Настройка доступна с Premium.'));
     }
@@ -75,4 +78,11 @@ export const saveBannerSettings = showBanners => (dispatch, getState) => {
         dispatch({type: UPDATE, payload: {saving: false}});
     });
     return saveRequest;
+};
+
+export const resetPremiumSettings = () => async dispatch => {
+    await Promise.allSettled([loadRequest, saveRequest, checkRequest].filter(Boolean));
+    const result = await sendBridgeRequest('VKWebAppStorageSet', {key: STORAGE_KEY, value: ''});
+    if (!result || result.result !== true) throw new Error('Не удалось сбросить настройки баннеров.');
+    dispatch({type: UPDATE, payload: {forced: false, showBanners: true, preferencesLoaded: true}});
 };

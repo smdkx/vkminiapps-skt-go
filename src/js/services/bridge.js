@@ -7,16 +7,20 @@ export const sendBridgeRequest = (method, params = {}, timeout = 15000) => {
         return Promise.reject(bridgeError('UNSUPPORTED_ENVIRONMENT', 'Откройте приложение во ВКонтакте.'));
     }
 
-    if (!bridge.supports(method)) {
-        return Promise.reject(bridgeError('UNSUPPORTED_METHOD', 'Функция недоступна в этом клиенте.'));
-    }
-
     return new Promise((resolve, reject) => {
+        let expired = false;
         const timer = setTimeout(() => {
+            expired = true;
             reject(bridgeError('BRIDGE_TIMEOUT', 'Время ожидания истекло.'));
         }, timeout);
 
-        Promise.resolve().then(() => bridge.send(method, params)).then(
+        // Initialization must not wait for capability negotiation with the host.
+        Promise.resolve().then(() => method === 'VKWebAppInit' || bridge.supportsAsync(method)).then(supported => {
+            // Do not send a late request after the capability check has timed out.
+            if (expired) return;
+            if (!supported) throw bridgeError('UNSUPPORTED_METHOD', 'Функция недоступна в этом клиенте.');
+            return bridge.send(method, params);
+        }).then(
             (data) => {
                 clearTimeout(timer);
                 resolve(data);
@@ -44,7 +48,5 @@ export const getCurrentAppId = async () => {
 };
 
 export const hapticNotification = (type) => {
-    if (bridge.isEmbedded() && bridge.supports('VKWebAppTapticNotificationOccurred')) {
-        bridge.send('VKWebAppTapticNotificationOccurred', {type}).catch(() => {});
-    }
+    sendBridgeRequest('VKWebAppTapticNotificationOccurred', {type}).catch(() => {});
 };

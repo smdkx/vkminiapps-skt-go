@@ -5,6 +5,7 @@ const initialState = {
 };
 
 export const formDataReducer = (state = initialState, action) => {
+    if (action.type === 'account/CLEARED') return initialState;
 
     switch (action.type) {
 

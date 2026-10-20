@@ -28,6 +28,7 @@ const validateSettings = value => {
 };
 
 export const loadStudentSettings = () => (dispatch, getState) => {
+    if (getState().account.resetting) return Promise.reject(new Error('Выполняется сброс данных.'));
     if (saveRequest) return saveRequest;
     if (getState().studentSettings.loaded) return Promise.resolve(getState().studentSettings);
     if (loadRequest) return loadRequest;
@@ -48,6 +49,7 @@ export const loadStudentSettings = () => (dispatch, getState) => {
 };
 
 export const saveStudentSettings = value => (dispatch, getState) => {
+    if (getState().account.resetting) return Promise.reject(new Error('Выполняется сброс данных.'));
     if (saveRequest) return Promise.reject(new Error('Настройки уже сохраняются.'));
     let settings;
     try {
@@ -73,4 +75,11 @@ export const saveStudentSettings = value => (dispatch, getState) => {
         dispatch({type: SAVING, payload: false});
     });
     return saveRequest;
+};
+
+export const resetStudentSettings = () => async dispatch => {
+    await Promise.allSettled([loadRequest, saveRequest].filter(Boolean));
+    const result = await sendBridgeRequest('VKWebAppStorageSet', {key: STORAGE_KEY, value: ''});
+    if (!result || result.result !== true) throw new Error('Не удалось удалить настройки профиля.');
+    dispatch({type: RECEIVED, payload: {group: '', department: ''}});
 };

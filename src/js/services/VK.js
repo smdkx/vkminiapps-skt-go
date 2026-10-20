@@ -2,16 +2,30 @@ import VKConnect from "@vkontakte/vk-bridge";
 
 import {store} from "../../index";
 
-import {setColorScheme, setAccessToken} from "../store/vk/actions";
+import {setColorScheme, setSafeAreaInsets, setHostAdaptivity, setAccessToken} from "../store/vk/actions";
 import {getCurrentAppId, sendBridgeRequest} from './bridge';
 
 const API_VERSION = '5.92';
 
 export const initApp = () => (dispatch) => {
     const VKConnectCallback = (e) => {
-        if (e.detail.type === 'VKWebAppUpdateConfig') {
-            const {scheme, appearance} = e.detail.data;
-            dispatch(setColorScheme(scheme || (appearance === 'dark' ? 'space_gray' : 'bright_light')));
+        if (['VKWebAppUpdateConfig', 'VKWebAppUpdateInsets'].includes(e.detail.type)) {
+            const {scheme, appearance, insets, adaptivity} = e.detail.data;
+            if (appearance === 'light' || appearance === 'dark') {
+                dispatch(setColorScheme(appearance));
+            } else if (scheme) {
+                dispatch(setColorScheme(['space_gray', 'vkcom_dark'].includes(scheme) ? 'dark' : 'light'));
+            }
+            if (['adaptive', 'force_mobile', 'force_mobile_compact'].includes(adaptivity)) {
+                dispatch(setHostAdaptivity(adaptivity));
+            }
+            if (insets) {
+                const safeAreaInsets = {};
+                ['top', 'right', 'bottom', 'left'].forEach(edge => {
+                    if (Number.isFinite(insets[edge]) && insets[edge] >= 0) safeAreaInsets[edge] = insets[edge];
+                });
+                dispatch(setSafeAreaInsets(safeAreaInsets));
+            }
         }
     };
 

@@ -4,7 +4,7 @@ import {sendBridgeRequest} from '../services/bridge';
 // File names are independent of the IDs already saved in VK Storage.
 export const memeCatalog = localMemes.map(({id, file}) => ({
     id,
-    src: `${process.env.PUBLIC_URL}/memes/${file}`,
+    src: `${import.meta.env.BASE_URL}memes/${file}`,
 }));
 
 // Stable image IDs survive reordering and refreshed CDN query parameters.
@@ -14,9 +14,12 @@ const RECEIVED = 'memes/RECEIVED';
 const SAVING = 'memes/SAVING';
 const SAVED = 'memes/SAVED';
 const SAVE_FAILED = 'memes/SAVE_FAILED';
-const initialState = {seen: [], loaded: false, saving: false, saveFailed: false};
+const RESETTING = 'memes/RESETTING';
+const CLEARED = 'memes/CLEARED';
+const initialState = {seen: [], loaded: false, saving: false, saveFailed: false, resetting: false};
 let loadRequest = null;
 let saveRequest = null;
+let resetRequest = null;
 const savedIds = new Set();
 
 export const memesReducer = (state = initialState, action) => {
@@ -25,11 +28,16 @@ export const memesReducer = (state = initialState, action) => {
         case SAVING: return {...state, saving: true};
         case SAVED: return {...state, saving: false, saveFailed: false};
         case SAVE_FAILED: return {...state, saving: false, saveFailed: true};
+        case RESETTING: return {...state, resetting: action.value};
+        case CLEARED: {
+            const seen = state.seen.filter(id => !action.ids.includes(id));
+            return {...state, seen, saveFailed: state.saveFailed && seen.length > 0};
+        }
         default: return state;
     }
 };
 
-export const loadMemeProgress = () => (dispatch) => {
+const loadProgress = dispatch => {
     if (loadRequest) return loadRequest;
     loadRequest = sendBridgeRequest('VKWebAppStorageGet', {keys: memeCatalog.map(meme => storageKey(meme.id))})
         .then(data => {
@@ -50,11 +58,18 @@ export const loadMemeProgress = () => (dispatch) => {
     return loadRequest;
 };
 
+export const loadMemeProgress = () => dispatch => {
+    if (resetRequest) return resetRequest.then(() => dispatch(loadMemeProgress()));
+    return loadProgress(dispatch);
+};
+
 export const saveMemeProgress = () => (dispatch, getState) => {
+    if (getState().account.resetting) return Promise.reject(new Error('Выполняется сброс данных.'));
+    if (getState().memes.resetting) return Promise.reject(new Error('История просмотров сбрасывается.'));
     if (saveRequest) return saveRequest;
     dispatch({type: SAVING});
     saveRequest = Promise.resolve().then(async () => {
-        if (!getState().memes.loaded) await dispatch(loadMemeProgress());
+        if (!getState().memes.loaded) await loadProgress(dispatch);
         // Read the latest state after each acknowledgement: quick clicks cannot overwrite newer views.
         while (true) {
             const id = getState().memes.seen.find(id => !savedIds.has(id));
@@ -71,8 +86,42 @@ export const saveMemeProgress = () => (dispatch, getState) => {
     return saveRequest;
 };
 
-export const markMemeSeen = id => dispatch => {
+export const markMemeSeen = id => (dispatch, getState) => {
+    if (getState().account.resetting) return Promise.reject(new Error('Выполняется сброс данных.'));
+    if (getState().memes.resetting) return Promise.reject(new Error('История просмотров сбрасывается.'));
     if (!memeCatalog.some(meme => meme.id === id)) return Promise.reject(new Error('Неизвестный мем.'));
     dispatch({type: RECEIVED, seen: [id]});
     return dispatch(saveMemeProgress());
+};
+
+export const resetMemeProgress = ({all = false} = {}) => (dispatch, getState) => {
+    if (resetRequest) return resetRequest;
+    const pending = [loadRequest, saveRequest].filter(Boolean);
+    dispatch({type: RESETTING, value: true});
+    resetRequest = Promise.all(pending.map(request => request.catch(() => {})))
+        .then(async () => {
+            // Refresh VK Storage first: another device may have saved additional views.
+            if (!all) await loadProgress(dispatch);
+            const ids = all ? memeCatalog.map(meme => meme.id)
+                : [...new Set([...getState().memes.seen, ...savedIds])];
+            const cleared = [];
+            for (const id of ids) {
+                try {
+                    const result = await sendBridgeRequest('VKWebAppStorageSet', {key: storageKey(id), value: ''});
+                    if (result && result.result === true) {
+                        savedIds.delete(id);
+                        cleared.push(id);
+                    }
+                } catch {
+                    // Keep unconfirmed entries so a retry can clear the remaining history.
+                }
+            }
+            dispatch({type: CLEARED, ids: cleared});
+            if (cleared.length !== ids.length) throw new Error('Не удалось сбросить все просмотры.');
+        })
+        .finally(() => {
+            resetRequest = null;
+            dispatch({type: RESETTING, value: false});
+        });
+    return resetRequest;
 };

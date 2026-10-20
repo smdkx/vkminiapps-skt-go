@@ -1,5 +1,7 @@
 import {
     SET_COLOR_SCHEME,
+    SET_SAFE_AREA_INSETS,
+    SET_HOST_ADAPTIVITY,
     SET_ACCESS_TOKEN,
     SET_ACTIVE_TAB,
     SET_SCROLL_POSITION,
@@ -49,3 +51,5 @@ export const setScrollPositionByID = (component) => (
         }
     }
 );
+export const setSafeAreaInsets = insets => ({type: SET_SAFE_AREA_INSETS, payload: insets});
+export const setHostAdaptivity = adaptivity => ({type: SET_HOST_ADAPTIVITY, payload: adaptivity});
