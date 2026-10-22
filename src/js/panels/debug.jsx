@@ -3,14 +3,13 @@ import {connect} from 'react-redux';
 import {Alert, Button, Box, Flex, Group, Header, Panel, PanelHeaderBack, SimpleCell, Switch} from '@vkontakte/vkui';
 import Snackbar from '../components/AppSnackbar';
 import PanelHeader from '../components/AppPanelHeader';
-import {Icon28CrownOutline, Icon28CupOutline, Icon28PictureOutline, Icon28UserCircleOutline} from '@vkontakte/icons';
+import {Icon28BlockOutline, Icon28CrownOutline, Icon28CupOutline, Icon28GlobeCrossOutline, Icon28PictureOutline, Icon28UserCircleOutline} from '@vkontakte/icons';
 import {goBack, openPopout, closePopout, setPage} from '../store/router/actions';
 import {resetAchievements, loadAchievements, earnAchievement} from '../store/achievements';
 import {resetMemeProgress} from '../store/memes';
 import {resetAccountData} from '../store/account';
 import NoticeBanner from '../components/NoticeBanner';
 import {isPremium, setForcedPremium} from '../store/premium';
-import {hapticNotification} from '../services/bridge';
 
 const Debug = ({id, goBack, setPage}) => <Panel id={id}>
     <PanelHeader before={<PanelHeaderBack hideLabelOnIOS onClick={goBack}/>}>Дебаг-меню</PanelHeader>
@@ -18,6 +17,14 @@ const Debug = ({id, goBack, setPage}) => <Panel id={id}>
         <SimpleCell before={<Icon28CrownOutline style={{color: 'var(--vkui--color_icon_accent)'}}/>} chevron="always" multiline
             onClick={() => setPage('profile', 'debug_premium')} subtitle="Принудительное включение и достижение">
             Premium
+        </SimpleCell>
+        <SimpleCell before={<Icon28GlobeCrossOutline style={{color: 'var(--vkui--color_icon_accent)'}}/>} chevron="always" multiline
+            onClick={() => setPage('profile', 'debug_region')} subtitle="Предпросмотр экрана недоступности">
+            Региональное ограничение
+        </SimpleCell>
+        <SimpleCell before={<Icon28BlockOutline style={{color: 'var(--vkui--color_icon_accent)'}}/>} chevron="always" multiline
+            onClick={() => setPage('profile', 'debug_blocked')} subtitle="Предпросмотр экрана блокировки">
+            Блокировка пользователя
         </SimpleCell>
     </Group>
     <Group header={<Header size="s">Сброс данных</Header>}>
@@ -67,7 +74,6 @@ class Premium extends React.Component {
         try {
             await this.props.earnAchievement('donut');
             this.showMessage('Достижение «Пончик» получено!', 'success');
-            if (this.mounted) hapticNotification('success');
         } catch (error) {
             this.showMessage('Не удалось сохранить достижение.');
         } finally {
@@ -150,7 +156,6 @@ class Achievements extends React.Component {
             this.resetPending = false;
         }
         if (!this.mounted) return;
-        hapticNotification(success ? 'success' : 'error');
         this.setState({snackbar: <Snackbar status={success ? 'success' : 'error'} layout="vertical" onClosed={() => {
             if (this.mounted) this.setState({snackbar: null});
         }}>{message}</Snackbar>});
@@ -161,7 +166,7 @@ class Achievements extends React.Component {
         return <Panel id={id}>
             <PanelHeader before={<PanelHeaderBack hideLabelOnIOS onClick={goBack}/>}>Достижения</PanelHeader>
             <Box padding="system"><NoticeBanner appearance="warning" title="Сброс достижений"
-                subtitle="Сброс удалит достижения текущего аккаунта. Их можно будет получить заново."/></Box>
+                subtitle="Сброс удалит достижения. Группа и просмотры мемов сохранятся, поэтому достижения за них можно получить снова. Для старта с нуля используйте полный сброс."/></Box>
             <Group header={<Header size="s">Служебные действия</Header>}>
                 <Box padding="system">
                     <Button size="l" stretched appearance="negative" onClick={this.confirmReset}
@@ -217,7 +222,6 @@ class Memes extends React.Component {
             this.resetPending = false;
         }
         if (!this.mounted) return;
-        hapticNotification(success ? 'success' : 'error');
         this.setState({snackbar: <Snackbar status={success ? 'success' : 'error'} layout="vertical" onClosed={() => {
             if (this.mounted) this.setState({snackbar: null});
         }}>{message}</Snackbar>});
@@ -294,9 +298,9 @@ function Account({id, goBack, openPopout, closePopout, resetAccountData, resetti
         <PanelHeader before={<PanelHeaderBack hideLabelOnIOS onClick={goBack}/>}>Данные аккаунта</PanelHeader>
         <Flex padding="system" margin="none" direction="column" gap={12}>
             <NoticeBanner appearance="warning" title="Полный сброс"
-                subtitle="Удаляются достижения, время использования, история мемов, выбранная группа, отделение и настройки баннеров. Форс Premium отключается."/>
+                subtitle="Удаляются достижения, прогресс, просмотры мемов и разделов, группа, отделение, тема, виброотклик и настройки баннеров. Форс Premium отключается."/>
             <NoticeBanner title="Данные ВКонтакте сохраняются"
-                subtitle="Отдельного аккаунта на сервере приложения нет. Аккаунт ВКонтакте и реальная подписка VK Donut сохраняются."/>
+                subtitle="Аккаунт ВКонтакте, разрешение уведомлений и реальная подписка VK Donut сохраняются."/>
         </Flex>
         <Group header={<Header size="s">Удаление данных приложения</Header>}>
             <Box padding="system">

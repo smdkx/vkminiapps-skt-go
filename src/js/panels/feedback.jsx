@@ -1,72 +1,44 @@
 import React from 'react';
 import {connect} from 'react-redux';
-
-import {goBack} from "../store/router/actions";
-
-import {
-    Panel,
-    PanelHeaderBack,
-    ContentCard,
-    CardGrid,
-    Button,
-    Box
-} from '@vkontakte/vkui';
+import {Panel, PanelHeaderBack, Group, Title, Text, Footnote, Button} from '@vkontakte/vkui';
+import {Icon28MessageOutline, Icon28LikeOutline, Icon28LightbulbOutline, Icon28BugOutline} from '@vkontakte/icons';
+import {goBack} from '../store/router/actions';
 import PanelHeader from '../components/AppPanelHeader';
 
-class Feedback extends React.Component {
+const topics = [
+    {title: 'Поделиться впечатлениями', description: 'Что нравится и что можно сделать удобнее.', Icon: Icon28LikeOutline},
+    {title: 'Предложить идею', description: 'Какой возможности вам не хватает.', Icon: Icon28LightbulbOutline},
+    {title: 'Сообщить об ошибке', description: 'Что не работает и как это повторить.', Icon: Icon28BugOutline},
+];
 
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            snackbar: null,
-            loader: false,
-        };
-    }
-
-    render() {
-        const {id, goBack} = this.props;
-
-        return (
-            <Panel id={id}>
-                <PanelHeader
-                    before={<PanelHeaderBack onClick={() => goBack()}/>}
-                >
-                    Отзыв о приложении
-                </PanelHeader>
-
-                <Box padding="system" style={{ paddingTop: 20 }}>
-                    <div className="FeedbackPanel__icons  vkuiFormItem vkuiFormItem--ios FormItem FormItem--ios vkuiFormItem--default FormItem--default vkuiFormItem--sizeY-regular FormItem--sizeY-regular">
-                        <div className="FeedbackPanel__icon FeedbackPanel__icon--1"></div>
-                        <div className="FeedbackPanel__icon FeedbackPanel__icon--2"></div>
-                        <div className="FeedbackPanel__icon FeedbackPanel__icon--3 FeedbackPanel__icon--active"></div>
-                        <div className="FeedbackPanel__icon FeedbackPanel__icon--4"></div>
-                        <div className="FeedbackPanel__icon FeedbackPanel__icon--5"></div>
+function Feedback({id, goBack}) {
+    return <Panel id={id} mode="card">
+        <PanelHeader before={<PanelHeaderBack onClick={goBack}/>}>Отзыв о приложении</PanelHeader>
+        <div className="FeedbackLayout">
+            <Group mode="card" separator="hide" className="FeedbackSection">
+                <div className="FeedbackContent">
+                    <div className="FeedbackIntro">
+                        <span className="FeedbackIntro__icon"><Icon28MessageOutline width={32} height={32} aria-hidden="true"/></span>
+                        <Title Component="h2" level="1" weight="2" className="FeedbackIntro__title">Вам слово</Title>
+                        <Text className="FeedbackIntro__description">Помогите сделать SKT Go лучше. Расскажите о своем опыте в анкете.</Text>
                     </div>
-                </Box>
-
-                <CardGrid size="l" style={{ marginTop: "10px", marginBottom: "30px"}}>
-                    <ContentCard mode="outline"
-                    className="tw"
-                    title="Оставьте ваш отзыв о приложении"
-                    description= {
-                        "На данной странице вы можете перейти к анкете и оставить отзыв о пользовании приложением, предложить идею или высказать свою точку зрения о текущем функционале.\n\nВсе предложения будут рассмотрены. Заполнять анкету можно неограниченное количество раз. Исследуя заполненные вами анкеты мы делаем приложение лучше." 
-                    }
-                    maxHeight={200}
-                    />
-                </CardGrid>
-
-                <Box padding="system" style={{display: 'flex'}}>
-                    <Button href='https://vk.com/app5619682_-204275493#574358' target="_blank" size="l" stretched style={{ marginRight: 8 }}>Перейти к анкете</Button>
-                </Box>
-            </Panel>
-        );
-    }
-
+                    <ul className="FeedbackTopics" aria-label="О чем можно написать">
+                        {topics.map(({title, description, Icon}) => <li key={title} className="FeedbackTopic">
+                            <span className="FeedbackTopic__icon"><Icon aria-hidden="true"/></span>
+                            <div className="FeedbackTopic__text">
+                                <Text Component="h3" weight="2" className="FeedbackTopic__title">{title}</Text>
+                                <Footnote Component="p" className="FeedbackTopic__description">{description}</Footnote>
+                            </div>
+                        </li>)}
+                    </ul>
+                    <div className="FeedbackActions">
+                        <Button href="https://vk.com/app5619682_-204275493#574358" target="_blank" rel="noopener noreferrer" size="l" stretched>Перейти к анкете</Button>
+                        <Footnote Component="p" className="FeedbackActions__hint">Анкета откроется в VK. Оставить отзыв можно несколько раз.</Footnote>
+                    </div>
+                </div>
+            </Group>
+        </div>
+    </Panel>;
 }
 
-const mapDispatchToProps = {
-    goBack
-};
-
-export default connect(null, mapDispatchToProps)(Feedback);
+export default connect(null, {goBack})(Feedback);

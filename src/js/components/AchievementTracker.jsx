@@ -3,7 +3,8 @@ import {connect} from 'react-redux';
 import bridge from '@vkontakte/vk-bridge';
 
 import Snackbar from './AppSnackbar';
-import {loadAchievements, recordUsageTime, NEWBIE_TIME_REQUIRED} from '../store/achievements';
+import {loadAchievements, recordUsageTime, NEWBIE_TIME_REQUIRED, awardProgressAchievements,
+    getEligibleProgressAchievements} from '../store/achievements';
 
 class AchievementTracker extends React.Component {
     state = {snackbar: null};
@@ -14,6 +15,7 @@ class AchievementTracker extends React.Component {
     pending = false;
     generation = 0;
     retryAfter = 0;
+    progressPending = false;
 
     componentDidMount() {
         if (!bridge.isEmbedded()) return;
@@ -23,6 +25,7 @@ class AchievementTracker extends React.Component {
         this.timer = setInterval(this.tick, 1000);
         this.props.loadAchievements().catch(() => this.showError('Не удалось загрузить достижения.'));
         this.updateActivity();
+        this.syncProgress();
     }
 
     componentDidUpdate(previous) {
@@ -36,6 +39,13 @@ class AchievementTracker extends React.Component {
         }
         if (previous.loaded !== this.props.loaded || previous.resetting !== this.props.resetting ||
             previous.earnedAt !== this.props.earnedAt) this.updateActivity();
+        // A reset should finish without immediately restoring awards from retained progress.
+        if (previous.resetting && !this.props.resetting) return;
+        if (previous.progressIds !== this.props.progressIds || previous.group !== this.props.group ||
+            previous.groupLoaded !== this.props.groupLoaded || previous.groupSaving !== this.props.groupSaving ||
+            previous.confirmedMemes !== this.props.confirmedMemes || previous.loaded !== this.props.loaded) {
+            this.syncProgress();
+        }
     }
 
     componentWillUnmount() {
@@ -47,10 +57,24 @@ class AchievementTracker extends React.Component {
         bridge.unsubscribe(this.onBridgeEvent);
     }
 
-    showError = message => {
-        if (this.mounted) this.setState({snackbar: <Snackbar onClosed={() => {
+    showError = (message, retry) => {
+        if (this.mounted) this.setState({snackbar: <Snackbar action={retry ? 'Повторить' : undefined} onActionClick={retry} onClosed={() => {
             if (this.mounted) this.setState({snackbar: null});
         }}>{message}</Snackbar>});
+    };
+
+    syncProgress = async () => {
+        if (!this.mounted || !this.props.loaded || this.props.resetting || !this.props.progressIds || this.progressPending) return;
+        const ids = this.props.progressIds;
+        this.progressPending = true;
+        try {
+            await this.props.awardProgressAchievements();
+        } catch {
+            if (!this.props.resetting) this.showError('Не удалось сохранить достижение.', this.syncProgress);
+        } finally {
+            this.progressPending = false;
+            if (this.mounted && ids !== this.props.progressIds) this.syncProgress();
+        }
     };
 
     sample = () => {
@@ -113,9 +137,14 @@ class AchievementTracker extends React.Component {
     }
 }
 
-export default connect(({achievements, account}) => ({
-    loaded: achievements.loaded,
-    earnedAt: achievements.earned.newbie,
-    newbieTime: achievements.newbieTime,
-    resetting: achievements.resetting || account.resetting,
-}), {loadAchievements, recordUsageTime})(AchievementTracker);
+export default connect(state => ({
+    loaded: state.achievements.loaded,
+    earnedAt: state.achievements.earned.newbie,
+    newbieTime: state.achievements.newbieTime,
+    resetting: state.achievements.resetting || state.account.resetting,
+    progressIds: getEligibleProgressAchievements(state).join(','),
+    group: state.studentSettings.group,
+    groupLoaded: state.studentSettings.loaded,
+    groupSaving: state.studentSettings.saving,
+    confirmedMemes: state.memes.confirmedSeen,
+}), {loadAchievements, recordUsageTime, awardProgressAchievements})(AchievementTracker);

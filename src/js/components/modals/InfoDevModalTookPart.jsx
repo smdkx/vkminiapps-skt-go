@@ -1,105 +1,41 @@
-import ModalPageHeader from '../AppModalPageHeader';
 import React from 'react';
+import {connect} from 'react-redux';
+import {ModalPage, PanelHeaderButton, PanelHeaderBack, Group, SimpleCell, Avatar} from '@vkontakte/vkui';
+import {Icon24Dismiss, Icon20DonutCoinCircleFillYellow} from '@vkontakte/icons';
+import ModalPageHeader from '../AppModalPageHeader';
 import UserAvatar from '../UserAvatar';
 import useUserPhotos from '../../hooks/useUserPhotos';
+import {goBack} from '../../store/router/actions';
 
-import {connect} from 'react-redux';
+const contributors = [
+    {id: 167786810, name: 'Андрей Харитонов', role: 'Мемы для приложения'},
+    {id: 142033810, name: 'Александр Макаров', role: 'Не пытается починить настройки'},
+];
+const userIds = contributors.map(user => user.id);
 
-import {
-    ModalPage,
-        PanelHeaderButton,
-    withPlatform,
-    Platform,
-    Group,
-    SimpleCell
-} from "@vkontakte/vkui";
-
-import {
-    Icon24Dismiss,
-    Icon24Cancel,
-    Icon20DonateCircleFillYellow
-} from '@vkontakte/icons';
-
-const numericIndicator = {
-    height: 20,
-    width: 20,
-    borderRadius: '50%',
-    textAlign: 'center',
-    lineHeight: '20px',
-    fontSize: 13,
-    boxShadow: '0 4px 24px 0 rgb(0 0 0 / 8%), 0 0 12px 0 rgb(0 0 0 / 8%)',
-}
-
-const userIds = [167786810, 142033810];
-
-function InfoDevModalTookPart({id, open, onClose, platform, active}) {
+function InfoDevModalTookPart({id, open, onClose, active, goBack}) {
     const {photos} = useUserPhotos(userIds, active);
 
-    return (
-        <ModalPage
-            hideCloseButton
-            open={open}
-            id={id}
-            header={
-                <ModalPageHeader
-                    before={platform !== Platform.IOS &&
-                        <PanelHeaderButton aria-label="Закрыть окно" onClick={onClose}>
-                            <Icon24Cancel/>
-                        </PanelHeaderButton>}
-
-                    after={platform === Platform.IOS &&
-                        <PanelHeaderButton aria-label="Закрыть окно" onClick={onClose}>
-                            <Icon24Dismiss/>
-                        </PanelHeaderButton>}
-                >
-                    Приняли участие
-                </ModalPageHeader>
-            }
-            onClose={() => {
-                onClose();
-                //document.body.style.overflow = 'auto';
-            }}
-            dynamicContentHeight
-        >
-            <Group>
-                <SimpleCell
-                chevron="auto"
-                href="https://vk.com/id167786810" target="_blank"
-                before={
-                <div className="Avatar__photo">
-                    <UserAvatar src={photos[167786810]} name="Андрей Харитонов"/>
-                    <div className="Avatar__indicator" >
-                        <Icon20DonateCircleFillYellow style={numericIndicator} />
-                    </div>
-                </div>
-                }
-                subtitle='Memes generator'
-                >
-                    Андрей Харитонов
-                </SimpleCell>
-
-                <SimpleCell
-                chevron="auto"
-                href="https://vk.com/id142033810" target="_blank"
-                before={
-                    <div className="Avatar__photo">
-                        <UserAvatar src={photos[142033810]} name="Александр Макаров"/>
-                        <div className="Avatar__indicator" >
-                            <Icon20DonateCircleFillYellow style={numericIndicator} />
-                        </div>
-                    </div>
-                }
-                subtitle='Не пытается починить настройки'
-                >
-                    Александр Макаров
-                </SimpleCell>
-            </Group>
-        </ModalPage>
-    );
+    return <ModalPage hideCloseButton open={open} id={id} onClose={onClose} dynamicContentHeight
+        header={<ModalPageHeader
+            before={<PanelHeaderBack hideLabelOnIOS hideLabelOnVKCom aria-label="Назад к разработчикам" onClick={goBack}/>}
+            after={<PanelHeaderButton aria-label="Закрыть окно" onClick={onClose}><Icon24Dismiss/></PanelHeaderButton>}>
+            Приняли участие
+        </ModalPageHeader>}>
+        <Group mode="plain" separator="hide" className="TeamModal">
+            {contributors.map(user => <SimpleCell key={user.id} className="TeamModal__person" chevron="auto" multiline
+                href={`https://vk.com/id${user.id}`} target="_blank" rel="noopener noreferrer" subtitle={user.role}
+                before={<UserAvatar size={48} src={photos[user.id]} name={user.name}>
+                    <Avatar.Badge role="img" aria-label="Особый вклад в приложение">
+                        <Icon20DonutCoinCircleFillYellow aria-hidden="true"/>
+                    </Avatar.Badge>
+                </UserAvatar>}>
+                {user.name}
+            </SimpleCell>)}
+        </Group>
+    </ModalPage>;
 }
 
-const mapStateToProps = ({router}, ownProps) => ({
+export default connect(({router}, ownProps) => ({
     active: router.activeModals[router.activeView] === ownProps.id,
-});
-
-export default withPlatform(connect(mapStateToProps)(InfoDevModalTookPart));
+}), {goBack})(InfoDevModalTookPart);

@@ -1,94 +1,27 @@
 import React from 'react';
-import {connect} from 'react-redux';
+import {Text} from '@vkontakte/vkui';
+import {Icon28NameTagOutline} from '@vkontakte/icons';
+import DirectoryPage, {DirectorySection, DirectoryFacts, DirectoryLinks} from '../../components/DirectoryPage';
+import {directorySources} from '../../components/data/directory.data';
 
-import {goBack} from "../../store/router/actions";
-
-import {
-    Panel,
-    PanelHeaderBack,
-    Group,
-    Header,
-    MiniInfoCell,
-    Link
-} from '@vkontakte/vkui';
-import PanelHeader from '../../components/AppPanelHeader';
-
-import { 
-    Icon24ClockOutline,
-    Icon24PlaceOutline,
-    Icon24PhoneOutline,
-    Icon24MentionOutline
-} from '@vkontakte/icons';
-
-class Commission extends React.Component {
-
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            snackbar: null,
-            loader: false,
-        };
-    }
-
-    render() {
-        const {id, goBack} = this.props;
-
-        return (
-            <Panel id={id} className="DirectoryPanel">
-                <PanelHeader
-                    before={<PanelHeaderBack onClick={() => goBack()}/>}
-                >
-                    Приемная комиссия
-                </PanelHeader>
-
-                <Group header={<Header size="s">Режим работы</Header>}>
-                    <MiniInfoCell
-                        before={<Icon24ClockOutline />}
-                        textWrap="full"
-                        mode="accent"
-                        >
-                            С 1 июня по 30 августа с 9:00 до 18:00 (кабинет №110, 1 этаж, читальный зал) <p />
-                            С 1 сентября по 31 мая с 10:00 до 17:00 (кабинет №107, 1 этаж)
-                    </MiniInfoCell>
-                </Group>
-
-                <Group header={<Header size="s">Месторасположение</Header>}>
-                    <MiniInfoCell
-                        before={<Icon24PlaceOutline />}
-                        textWrap="full"
-                        mode="accent"
-                        >
-                            214000, г. Смоленск, ул. Коммунистическая, дом 21
-                    </MiniInfoCell>
-                </Group>
-
-                <Group header={<Header size="s">Дополнительная информация</Header>}>
-                    <MiniInfoCell
-                        before={<Icon24PhoneOutline />} 
-                        textWrap="full"
-                        mode="accent"
-                        >
-                            <Link target="_blank" href="tel:389068">38-90-68</Link>
-                    </MiniInfoCell>
-
-                    <MiniInfoCell
-                        before={<Icon24MentionOutline />}
-                        textWrap="full"
-                        mode="accent"
-                        >
-                            <Link href="mailto:smol.kollegetelekom@mail.ru">smol.kollegetelekom@mail.ru</Link>
-                    </MiniInfoCell>
-                </Group>
-
-            </Panel>
-        );
-    }
-
+export default function Commission({id}) {
+    return <DirectoryPage id={id} title="Приемная комиссия" introTitle="Вопросы о поступлении"
+        description="Уточните условия приема, документы и время визита." Icon={Icon28NameTagOutline}>
+        <DirectorySection title="Связаться"><DirectoryFacts items={[
+            {label: 'Телефон', value: '+7 (4812) 38-90-68', href: 'tel:+74812389068'},
+            {label: 'Электронная почта', value: 'pk@collegetel.ru', href: 'mailto:pk@collegetel.ru'},
+            {label: 'Адрес', value: '214000, г. Смоленск, ул. Коммунистическая, 21'},
+        ]}/></DirectorySection>
+        <DirectorySection title="Летний прием"><DirectoryFacts items={[
+            {label: 'Период', value: 'С 1 июня по 31 августа'},
+            {label: 'Понедельник - пятница', value: '9:00 - 18:00'},
+            {label: 'Суббота', value: '9:00 - 13:00'},
+            {label: 'Воскресенье', value: 'Выходной'},
+            {label: 'Кабинеты приема', value: '№110, читальный зал, и №107. Первый этаж.'},
+        ]}/><Text Component="p" className="DirectoryNote">График вне летнего приема и кабинет уточните по телефону.</Text></DirectorySection>
+        <DirectorySection title="Поступающим"><DirectoryLinks items={[
+            {title: 'Документы и условия приема', description: 'Официальная информация для абитуриентов', href: directorySources.admission},
+            {title: 'Правила приема', description: 'Действующие документы колледжа', href: 'https://collegetel.ru/sveden/abitur#anchPriemCond'},
+        ]}/></DirectorySection>
+    </DirectoryPage>;
 }
-
-const mapDispatchToProps = {
-    goBack
-};
-
-export default connect(null, mapDispatchToProps)(Commission);

@@ -28,3 +28,21 @@ export const timetableGroups = [
     {id: 'group_10', title: 'ПКС9619, ПКС9719', image: timetable8},
     {id: 'group_11', title: 'КС11519, КС9518', image: timetable10},
 ];
+
+// Each group gets its own route while sharing the original scan.
+export const timetableEntries = timetableGroups.flatMap(group => {
+    const titles = group.title.split(',').map(title => title.trim());
+    return titles.map((title, index) => ({
+        id: titles.length === 1 ? group.id : `${group.id}_${index + 1}`,
+        title,
+        documents: group.documents
+            ? group.documents.filter(document => document.title.split(',').some(item => item.trim() === title))
+            : [{title: group.title, src: group.image}],
+    }));
+});
+
+// Keep existing grouped routes working as well.
+export const timetablePanels = [
+    ...timetableGroups,
+    ...timetableEntries.filter(entry => !timetableGroups.some(group => group.id === entry.id)),
+];

@@ -4,23 +4,10 @@ import {connect} from 'react-redux';
 import {goBack} from "../../store/router/actions";
 import {loadAchievements} from '../../store/achievements';
 
-import {
-    Image,
-    Panel,
-    PanelHeaderBack,
-    Group,
-    Placeholder,
-    MiniInfoCell,
-} from '@vkontakte/vkui';
 import Snackbar from '../../components/AppSnackbar';
-import PanelHeader from '../../components/AppPanelHeader';
+import AchievementDetails from '../../components/AchievementDetails';
 
-import {
-    Icon20ArticleOutline,
-    Icon20QuestionOutline
-} from "@vkontakte/icons";
 
-import EasterEgg from "../../../img/achievements/easterEgg.svg";
 
 class Achievement extends React.Component {
 
@@ -48,42 +35,9 @@ class Achievement extends React.Component {
     render() {
         const {id, goBack, earnedAt, achievementsLoaded} = this.props;
 
-        return (
-            <Panel id={id}>
-                <PanelHeader
-                    before={<PanelHeaderBack onClick={() => goBack()}/>}
-                >
-                    Достижение
-                </PanelHeader>
-
-                <Group>
-                    <Placeholder
-                    stretched
-                    icon={<Image noBorder withTransparentBackground size={160} src={EasterEgg} alt="Пасхалка" className={earnedAt ? '' : 'Achievements__filter'} />}
-                    title="Пасхалка"
-                >
-                    <MiniInfoCell
-                    before={<Icon20ArticleOutline />}
-                    textWrap="full"
-                    >
-                        Найти пасхалку в приложении
-                    </MiniInfoCell>
-
-                    <MiniInfoCell
-                    before={<Icon20QuestionOutline />}
-                    textWrap="full"
-                    >
-                        <span role="status" aria-live="polite">
-                            {earnedAt ? 'Достижение получено' : achievementsLoaded ? 'Достижение не получено' : 'Статус неизвестен'}
-                        </span>
-                    </MiniInfoCell>
-
-                    </Placeholder>
-                </Group>
-
-                {this.state.snackbar}
-            </Panel>
-        );
+        return <AchievementDetails id={id} goBack={goBack} title="Пасхалка"
+            description="Найти пасхалку в приложении."
+            earnedAt={earnedAt} loaded={achievementsLoaded} snackbar={this.state.snackbar}/>;
     }
 
 }

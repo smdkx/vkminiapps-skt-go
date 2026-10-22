@@ -1,10 +1,13 @@
 import bridge from '@vkontakte/vk-bridge';
 
 const bridgeError = (code, message) => Object.assign(new Error(message), {code});
+let hapticsEnabled = true;
+
+export const setHapticsEnabled = enabled => { hapticsEnabled = enabled === true; };
 
 export const sendBridgeRequest = (method, params = {}, timeout = 15000) => {
     if (!bridge.isEmbedded()) {
-        return Promise.reject(bridgeError('UNSUPPORTED_ENVIRONMENT', 'Откройте приложение во ВКонтакте.'));
+        return Promise.reject(bridgeError('UNSUPPORTED_ENVIRONMENT', 'Откройте приложение внутри ВКонтакте.'));
     }
 
     return new Promise((resolve, reject) => {
@@ -48,5 +51,6 @@ export const getCurrentAppId = async () => {
 };
 
 export const hapticNotification = (type) => {
+    if (!hapticsEnabled) return;
     sendBridgeRequest('VKWebAppTapticNotificationOccurred', {type}).catch(() => {});
 };

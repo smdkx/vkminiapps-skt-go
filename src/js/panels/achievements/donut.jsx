@@ -6,27 +6,13 @@ import {loadAchievements, earnAchievement} from '../../store/achievements';
 
 import {getDonutErrorMessage} from '../../services/donut';
 import {checkPremiumSubscription} from '../../store/premium';
-import {hapticNotification} from '../../services/bridge';
 
-import {
-    Image,
-    Panel,
-    PanelHeaderBack,
-    Group,
-    Placeholder,
-    MiniInfoCell,
-    Button,
-    Box
-} from '@vkontakte/vkui';
+import {Button} from '@vkontakte/vkui';
 import Snackbar from '../../components/AppSnackbar';
-import PanelHeader from '../../components/AppPanelHeader';
+import AchievementDetails from '../../components/AchievementDetails';
+import {DONUT_SUBSCRIPTION_URL} from '../../components/data/community.data';
 
-import {
-    Icon20ArticleOutline,
-    Icon20QuestionOutline
-} from "@vkontakte/icons";
 
-import Donut from "../../../img/achievements/donut.svg";
 
 class Achievement extends React.Component {
 
@@ -80,7 +66,6 @@ class Achievement extends React.Component {
         }
 
         if (!this.mounted) return;
-        if (status !== 'not_subscribed') hapticNotification(failed ? 'error' : 'success');
         this.setState({
             status,
             snackbar: <Snackbar status={failed ? 'error' : status === 'subscribed' ? 'success' : 'info'}
@@ -94,51 +79,15 @@ class Achievement extends React.Component {
         const {id, goBack, earnedAt, achievementsLoaded} = this.props;
         const {status} = this.state;
 
-        return (
-            <Panel id={id}>
-                <PanelHeader
-                    before={<PanelHeaderBack onClick={() => goBack()}/>}
-                >
-                    Достижение
-                </PanelHeader>
-
-                <Group>
-                    <Placeholder
-                    stretched
-                    icon={<Image noBorder withTransparentBackground size={160} src={Donut} alt="Пончик" className={earnedAt ? '' : 'Achievements__filter'} />}
-                    title="Пончик"
-                >
-                    <MiniInfoCell
-                    before={<Icon20ArticleOutline />}
-                    textWrap="full"
-                    >
-                        Оформить подписку VK Donut
-                    </MiniInfoCell>
-
-                    <MiniInfoCell
-                    before={<Icon20QuestionOutline />}
-                    textWrap="full"
-                    >
-                        <span role="status" aria-live="polite">
-                            {earnedAt ? 'Достижение получено' : achievementsLoaded ? 'Достижение не получено' : 'Статус неизвестен'}
-                        </span>
-                    </MiniInfoCell>
-
-                    {!earnedAt && <Box padding="system">
-                        <Button onClick={this.checkSubscription} loading={status === 'loading'} disabled={status === 'loading'} size="m">{status === 'loading' ? 'Проверяем…' : 'Проверить подписку'}</Button>
-                    </Box>}
-
-                    {!earnedAt && status === 'not_subscribed' && <Box padding="system">
-                        <Button href="https://vk.com/donut/teamskt" target="_blank" rel="noopener noreferrer" mode="secondary" size="m">Оформить подписку</Button>
-                    </Box>}
-
-                    </Placeholder>
-                </Group>
-
-                {this.state.snackbar}
-
-            </Panel>
-        );
+        return <AchievementDetails id={id} goBack={goBack} title="Пончик" description="Оформить подписку VK Donut."
+            earnedAt={earnedAt} loaded={achievementsLoaded} snackbar={this.state.snackbar}
+            actions={<>
+                <Button onClick={this.checkSubscription} loading={status === 'loading'} disabled={status === 'loading'} size="l" stretched>
+                    {status === 'loading' ? 'Проверяем...' : 'Проверить подписку'}
+                </Button>
+                {status === 'not_subscribed' && <Button href={DONUT_SUBSCRIPTION_URL} target="_blank"
+                    rel="noopener noreferrer" mode="secondary" size="l" stretched>Оформить подписку</Button>}
+            </>}/>;
     }
 
 }

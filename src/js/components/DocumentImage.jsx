@@ -3,7 +3,11 @@ import bridge from '@vkontakte/vk-bridge';
 import {Button, Card, Placeholder, Spinner} from '@vkontakte/vkui';
 import {sendBridgeRequest} from '../services/bridge';
 
-export default function DocumentImage({src, title, onError, preview = false}) {
+export default function DocumentImage(props) {
+    return <DocumentImageSource key={props.src} {...props}/>;
+}
+
+function DocumentImageSource({src, title, onError, preview = false}) {
     const [status, setStatus] = useState('loading');
     const [attempt, setAttempt] = useState(0);
     const [opening, setOpening] = useState(false);

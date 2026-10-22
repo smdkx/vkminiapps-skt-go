@@ -30,5 +30,3 @@ createRoot(document.getElementById('root')).render(
         <App/>
     </Provider>
 );
-
-//import('./eruda.js').then(({ default: eruda }) => {})

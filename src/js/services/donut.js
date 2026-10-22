@@ -65,7 +65,7 @@ export const checkDonutSubscription = async () => {
 };
 
 export const getDonutErrorMessage = (error) => {
-    if (error.code === 'UNSUPPORTED_ENVIRONMENT') return 'Проверка доступна только во ВКонтакте.';
+    if (error.code === 'UNSUPPORTED_ENVIRONMENT') return 'Откройте приложение внутри ВКонтакте.';
     if (error.code === 'UNSUPPORTED_METHOD') return 'Проверка недоступна в этом клиенте.';
     if (error.code === 'BRIDGE_TIMEOUT') return 'Сервер не ответил вовремя.';
     if (error.code === 'INVALID_VK_RESPONSE') return 'Некорректный ответ сервера.';

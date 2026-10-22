@@ -14,14 +14,6 @@ let queuedActions = [];
 let pendingBack = null;
 
 const browserHistory = () => typeof window !== 'undefined' && window.history;
-const scrollY = () => typeof window === 'undefined' ? 0 : window.pageYOffset || 0;
-const withScroll = state => ({
-    ...state,
-    scrollPosition: {
-        ...state.scrollPosition,
-        [state.activeStory + '_' + state.activeView + '_' + state.activePanel]: scrollY()
-    }
-});
 const sameLocation = (left, right) => left && right &&
     left.activeStory === right.activeStory && left.activeView === right.activeView &&
     left.activePanel === right.activePanel &&
@@ -66,16 +58,17 @@ const navigate = action => (dispatch, getState) => {
         }
         return;
     }
-    if (historyIndex >= 0) snapshots[historyIndex] = withScroll(before);
-    dispatch({...action, payload: {...action.payload, scrollY: scrollY()}});
+    if (historyIndex >= 0) snapshots[historyIndex] = before;
+    dispatch(action);
     const after = getState().router;
     if (before !== after) {
         remember(after);
         if (before.activeStory !== null) syncSwipeBack(after);
     }
-    if (action.type === SET_STORY && before.activeStory === action.payload.story && typeof window !== 'undefined') {
+    // Only scroll an unchanged tab here. During a panel transition VKUI owns
+    // scroll compensation and restoration, including returning to the tab root.
+    if (action.type === SET_STORY && before === after && before.activeStory === action.payload.story && typeof window !== 'undefined') {
         window.scrollTo(0, 0);
-        if (historyIndex >= 0) snapshots[historyIndex] = withScroll(after);
     }
 };
 
@@ -84,7 +77,7 @@ export const setPage = (view, panel) => navigate({type: SET_PAGE, payload: {view
 
 export const goBack = () => (dispatch, getState) => {
     if (waitingForHistory) return;
-    const state = withScroll(getState().router);
+    const state = getState().router;
     const parent = routerReducer(state, {type: GO_BACK});
     const history = browserHistory();
 
@@ -131,14 +124,11 @@ export const handleHistoryChange = event => (dispatch, getState) => {
         VK.closeApp();
         return;
     }
-    const current = withScroll(getState().router);
+    const current = getState().router;
     if (historyIndex >= 0) snapshots[historyIndex] = current;
     historyIndex = marker.index;
     const target = pendingBack && pendingBack.index === historyIndex ? pendingBack.router : snapshots[historyIndex];
-    const restored = {
-        ...target,
-        scrollPosition: {...target.scrollPosition, ...current.scrollPosition}
-    };
+    const restored = target;
     pendingBack = null;
     snapshots[historyIndex] = restored;
     dispatch({type: RESTORE_ROUTER, payload: {router: restored}});

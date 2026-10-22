@@ -5,7 +5,7 @@ const RETRY_DELAY = 60 * 1000;
 const cache = new Map();
 
 export const getUserPhotosErrorMessage = error => {
-    if (error.code === 'UNSUPPORTED_ENVIRONMENT') return 'Фотографии доступны во ВКонтакте.';
+    if (error.code === 'UNSUPPORTED_ENVIRONMENT') return 'Откройте приложение внутри ВКонтакте.';
     if (error.code === 'UNSUPPORTED_METHOD') return 'Загрузка фотографий недоступна.';
     if (error.code === 'BRIDGE_TIMEOUT') return 'Сервер не ответил вовремя.';
     if (error.apiCode === 5) return 'Не удалось получить фотографии из ВК.';

@@ -1,13 +1,11 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Image, Panel, PanelHeaderBack, Group, Placeholder, MiniInfoCell, Button, Box, } from '@vkontakte/vkui';
+import {Button} from '@vkontakte/vkui';
 import Snackbar from './AppSnackbar';
-import PanelHeader from './AppPanelHeader';
-import {Icon20ArticleOutline, Icon20QuestionOutline} from '@vkontakte/icons';
+import AchievementDetails from './AchievementDetails';
 import {goBack} from '../store/router/actions';
 import {loadAchievements, earnAchievement} from '../store/achievements';
 import {getAppActionErrorMessage} from '../services/appActions';
-import {hapticNotification} from '../services/bridge';
 
 class ActionAchievement extends React.Component {
     state = {snackbar: null, loading: false, confirmed: false};
@@ -39,7 +37,6 @@ class ActionAchievement extends React.Component {
             confirmed = true;
             await this.props.earnAchievement(this.props.achievement);
             this.showMessage('Достижение получено!', 'success');
-            if (this.mounted) hapticNotification('success');
         } catch (error) {
             this.showMessage(confirmed
                 ? 'Не удалось сохранить достижение.'
@@ -51,25 +48,13 @@ class ActionAchievement extends React.Component {
     };
 
     render() {
-        const {id, goBack, title, description, image, buttonText, earnedAt, achievementsLoaded} = this.props;
+        const {id, goBack, title, description, achievement, buttonText, earnedAt, achievementsLoaded} = this.props;
         const {loading, confirmed} = this.state;
-        return <Panel id={id}>
-            <PanelHeader before={<PanelHeaderBack onClick={() => goBack()}/>}>Достижение</PanelHeader>
-            <Group>
-                <Placeholder stretched title={title} icon={<Image noBorder withTransparentBackground size={160} src={image} alt={title} className={earnedAt ? '' : 'Achievements__filter'}/>}>
-                    <MiniInfoCell before={<Icon20ArticleOutline/>} textWrap="full">{description}</MiniInfoCell>
-                    <MiniInfoCell before={<Icon20QuestionOutline/>} textWrap="full">
-                        <span role="status" aria-live="polite">
-                            {earnedAt ? 'Достижение получено' : achievementsLoaded ? 'Достижение не получено' : 'Статус неизвестен'}
-                        </span>
-                    </MiniInfoCell>
-                    {!earnedAt && <Box padding="system"><Button size="m" loading={loading} disabled={loading} onClick={this.complete}>
-                        {loading ? 'Ожидаем подтверждение…' : confirmed ? 'Сохранить достижение' : buttonText}
-                    </Button></Box>}
-                </Placeholder>
-            </Group>
-            {this.state.snackbar}
-        </Panel>;
+        return <AchievementDetails id={id} goBack={goBack} title={title} description={description} achievement={achievement}
+            earnedAt={earnedAt} loaded={achievementsLoaded} snackbar={this.state.snackbar}
+            actions={<Button size="l" stretched loading={loading} disabled={loading} onClick={this.complete}>
+                {loading ? 'Ожидаем подтверждение…' : confirmed ? 'Сохранить достижение' : buttonText}
+            </Button>}/>;
     }
 }
 

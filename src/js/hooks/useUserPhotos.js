@@ -20,7 +20,7 @@ export default function useUserPhotos(userIds, active) {
         loadUserPhotos(userIds).then(loaded => {
             if (!cancelled) setPhotos(loaded);
         }).catch(error => {
-            if (!cancelled) setError(getUserPhotosErrorMessage(error));
+            if (!cancelled) setError({message: getUserPhotosErrorMessage(error), attempt});
         }).finally(() => {
             if (!cancelled) setLoading(false);
         });

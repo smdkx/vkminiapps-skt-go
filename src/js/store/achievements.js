@@ -1,6 +1,10 @@
 import {sendBridgeRequest} from '../services/bridge';
+import localMemes from '../components/data/local-memes.data.json';
 
 export const NEWBIE_TIME_REQUIRED = 5 * 60 * 1000;
+export const MEMOLOGIST_REQUIRED = 25;
+const memeIds = localMemes.map(item => item.id);
+const progressIds = ['mygroup', 'memologist', 'collector'];
 const NEWBIE_TIME_KEY = 'skt_achievement_newbie_time_v1';
 const STORAGE_KEYS = {
     newbie: 'skt_achievement_newbie_v1',
@@ -10,6 +14,9 @@ const STORAGE_KEYS = {
     star: 'skt_achievement_star_v1',
     static: 'skt_achievement_static_v1',
     easteregg: 'skt_achievement_easteregg_v1',
+    mygroup: 'skt_achievement_mygroup_v1',
+    memologist: 'skt_achievement_memologist_v1',
+    collector: 'skt_achievement_collector_v1',
 };
 const RECEIVED = 'achievements/RECEIVED';
 const CLEARED = 'achievements/CLEARED';
@@ -71,6 +78,36 @@ const readAchievements = () => (dispatch, getState) => {
 const hasAllOtherAchievements = earned => Object.keys(STORAGE_KEYS)
     .every(id => id === 'steep' || Boolean(earned[id]));
 
+export const getProgressAchievement = (state, id) => {
+    if (id === 'mygroup') return {
+        current: state.studentSettings.group ? 1 : 0,
+        total: 1,
+        loaded: state.studentSettings.loaded,
+    };
+    const seen = new Set(state.memes.confirmedSeen);
+    return {
+        current: memeIds.filter(memeId => seen.has(memeId)).length,
+        total: id === 'memologist' ? MEMOLOGIST_REQUIRED : memeIds.length,
+        loaded: state.memes.loaded,
+    };
+};
+
+export const getEligibleProgressAchievements = state => {
+    if (state.account.resetting || state.achievements.resetting) return [];
+    return progressIds.filter(id => {
+        if (state.achievements.earned[id] || (id === 'mygroup' ? state.studentSettings.saving : state.memes.resetting)) return false;
+        const progress = getProgressAchievement(state, id);
+        return progress.loaded && progress.total > 0 && progress.current >= progress.total;
+    });
+};
+
+export const awardProgressAchievements = () => async (dispatch, getState) => {
+    for (const id of getEligibleProgressAchievements(getState())) {
+        if (getState().account.resetting || getState().achievements.resetting) return;
+        await dispatch(earnAchievement(id));
+    }
+};
+
 const awardSteep = (dispatch, getState) => {
     const {earned, resetting} = getState().achievements;
     if (getState().account.resetting || resetting || earned.steep || !hasAllOtherAchievements(earned)) return Promise.resolve();
@@ -83,6 +120,7 @@ export const loadAchievements = () => async (dispatch, getState) => {
     if (!getState().achievements.earned.newbie && getState().achievements.newbieTime >= NEWBIE_TIME_REQUIRED) {
         await dispatch(earnAchievement('newbie'));
     }
+    await dispatch(awardProgressAchievements());
     await awardSteep(dispatch, getState);
     return getState().achievements.earned;
 };
@@ -102,6 +140,9 @@ export const earnAchievement = (id) => (dispatch, getState) => {
             }
             if (id === 'newbie' && getState().achievements.newbieTime < NEWBIE_TIME_REQUIRED) {
                 throw new Error('Недостаточно времени в приложении.');
+            }
+            if (progressIds.includes(id) && !getEligibleProgressAchievements(getState()).includes(id)) {
+                throw new Error('Условие достижения не выполнено.');
             }
 
             const earnedAt = Date.now();

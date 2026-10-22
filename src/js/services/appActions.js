@@ -39,7 +39,8 @@ export const shareApplication = async () => {
 
 export const getAppActionErrorMessage = (error, achievement) => {
     const code = error && error.code;
-    if (code === 'UNSUPPORTED_ENVIRONMENT' || code === 'UNSUPPORTED_METHOD') {
+    if (code === 'UNSUPPORTED_ENVIRONMENT') return 'Откройте приложение внутри ВКонтакте.';
+    if (code === 'UNSUPPORTED_METHOD') {
         return 'Действие недоступно в этом клиенте.';
     }
     if (code === 'BRIDGE_TIMEOUT') return 'Время ожидания истекло.';

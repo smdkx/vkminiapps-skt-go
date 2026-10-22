@@ -1,90 +1,20 @@
-import {
-    SET_ACCESS_TOKEN,
-    SET_ACTIVE_TAB,
-    SET_COLOR_SCHEME,
-    SET_SAFE_AREA_INSETS,
-    SET_HOST_ADAPTIVITY,
-    SET_SCROLL_POSITION,
-    SET_SCROLL_POSITION_BY_ID
-} from './actionTypes';
+import {SET_COLOR_SCHEME, SET_SAFE_AREA_INSETS, SET_HOST_ADAPTIVITY} from './actionTypes';
 
 const initialState = {
-    accessToken: undefined,
     colorScheme: undefined,
     safeAreaInsets: undefined,
     hostAdaptivity: undefined,
-
-    activeTab: [],
-    componentScroll: []
 };
 
 export const vkuiReducer = (state = initialState, action) => {
-
     switch (action.type) {
-
         case SET_HOST_ADAPTIVITY:
             return {...state, hostAdaptivity: action.payload};
-
         case SET_SAFE_AREA_INSETS:
             return {...state, safeAreaInsets: action.payload};
-
-        case SET_COLOR_SCHEME: {
-            return {
-                ...state,
-                colorScheme: action.payload,
-            };
-        }
-
-        case SET_ACCESS_TOKEN: {
-            return {
-                ...state,
-                accessToken: action.payload,
-            };
-        }
-
-        case SET_ACTIVE_TAB: {
-            return {
-                ...state,
-                activeTab: {
-                    ...state.activeTab,
-                    [action.payload.component]: action.payload.tab
-                },
-            };
-        }
-
-        case SET_SCROLL_POSITION: {
-            return {
-                ...state,
-                componentScroll: {
-                    ...state.componentScroll,
-                    [action.payload.component]: {
-                        x: action.payload.x,
-                        y: action.payload.y
-                    }
-                },
-            };
-        }
-
-        case SET_SCROLL_POSITION_BY_ID: {
-            let element = document.getElementById(action.payload.component).getElementsByClassName("HorizontalScroll__in")[0];
-
-            let x = element.scrollLeft;
-            let y = element.scrollTop;
-
-            return {
-                ...state,
-                componentScroll: {
-                    ...state.componentScroll,
-                    [action.payload.component]: {
-                        x: x,
-                        y: y
-                    }
-                },
-            };
-        }
-
-        default: {
+        case SET_COLOR_SCHEME:
+            return {...state, colorScheme: action.payload};
+        default:
             return state;
-        }
     }
 };

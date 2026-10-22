@@ -1,116 +1,103 @@
 import React from 'react';
 import {connect} from 'react-redux';
-
-import {goBack, setPage} from "../store/router/actions";
+import {Panel, PanelHeaderBack, Group, Header, Title, Text, Box, Progress, Tappable, Spinner, Button} from '@vkontakte/vkui';
+import {Icon28CupOutline, Icon20CheckCircleOutline, Icon20LockOutline, Icon20InfoCircleOutline} from '@vkontakte/icons';
+import {goBack, setPage} from '../store/router/actions';
 import {loadAchievements} from '../store/achievements';
-
-import {
-    Image,
-    Panel,
-    PanelHeaderBack,
-    Group,
-    HorizontalScroll,
-    HorizontalCell,
-    Header,
-} from '@vkontakte/vkui';
+import {achievementCatalog} from '../components/data/achievements.data';
 import Snackbar from '../components/AppSnackbar';
 import PanelHeader from '../components/AppPanelHeader';
+import AchievementIcon from '../components/AchievementIcon';
 
-import NewBie from "../../img/achievements/newbie.svg";
-import Steep from "../../img/achievements/steep.svg";
-import Static from "../../img/achievements/static.svg";
-import Donut from "../../img/achievements/donut.svg";
-import Subscriber from "../../img/achievements/subscriber.svg";
-import EasterEgg from "../../img/achievements/easterEgg.svg";
-import Star from "../../img/achievements/star.svg";
-
-//import test from '../../img/achievements/donut.svg';
+const categories = [{id: 'main', title: 'Основные'}, {id: 'extra', title: 'Второстепенные'}];
 
 class Achievements extends React.Component {
-
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            snackbar: null,
-        };
-    }
+    state = {snackbar: null, loading: true};
+    mounted = false;
+    pending = false;
 
     componentDidMount() {
         this.mounted = true;
-        this.props.loadAchievements().catch(() => {
-            if (this.mounted) this.setState({snackbar: <Snackbar onClosed={() => {
-                if (this.mounted) this.setState({snackbar: null});
-            }}>Не удалось загрузить достижения.</Snackbar>});
-        });
+        this.load();
     }
 
     componentWillUnmount() {
         this.mounted = false;
     }
 
+    load = async () => {
+        if (this.pending) return;
+        this.pending = true;
+        this.setState({loading: true, snackbar: null});
+        try {
+            await this.props.loadAchievements();
+        } catch (error) {
+            if (this.mounted) this.setState({snackbar: <Snackbar action="Повторить" onActionClick={this.load}
+                onClosed={() => { if (this.mounted) this.setState({snackbar: null}); }}>
+                Не удалось загрузить достижения.
+            </Snackbar>});
+        } finally {
+            this.pending = false;
+            if (this.mounted) this.setState({loading: false});
+        }
+    };
+
     render() {
-        const {id, goBack, setPage, earned} = this.props;
-
-        return (
-            <Panel id={id}>
-                <PanelHeader
-                    before={<PanelHeaderBack onClick={() => goBack()}/>}
-                >
-                    Достижения
-                </PanelHeader>
-
-                <Group header={<Header>Основные</Header>}>
-                    <HorizontalScroll>
-                        <div style={{ display: 'flex' }}>
-                            <HorizontalCell size='auto' title='Новичок' onClick={() => setPage('profile', 'newbie')} aria-label={`Достижение «Новичок»${earned.newbie ? ': получено' : ''}`}>
-                                <Image noBorder withTransparentBackground size={160} src={NewBie} className={earned.newbie ? '' : 'Achievements__filter'} />
-                            </HorizontalCell>
-
-                            <HorizontalCell size='auto' title='Крутой' onClick={() => setPage('profile', 'steep')} aria-label={`Достижение «Крутой»${earned.steep ? ': получено' : ''}`}>
-                                <Image noBorder withTransparentBackground size={160} src={Steep} className={earned.steep ? '' : 'Achievements__filter'} />
-                            </HorizontalCell>
-
-                            <HorizontalCell size='auto' title='Статистика' onClick={() => setPage('profile', 'static')} aria-label={`Достижение «Статистика»${earned.static ? ': получено' : ''}`}>
-                                <Image noBorder withTransparentBackground size={160} src={Static} className={earned.static ? '' : 'Achievements__filter'} />
-                            </HorizontalCell>
+        const {id, goBack, setPage, earned, loaded} = this.props;
+        const received = achievementCatalog.filter(item => earned[item.id]).length;
+        const total = achievementCatalog.length;
+        return <Panel id={id} mode="card">
+            <PanelHeader before={<PanelHeaderBack onClick={goBack}/>}>Достижения</PanelHeader>
+            <div className="AchievementsLayout">
+                <Group mode="card" separator="hide" className="AchievementSection AchievementsSummary">
+                    <Box padding="system" className="AchievementsSummary__content">
+                        <div className="AchievementsSummary__heading">
+                            <span className="AchievementsSummary__icon"><Icon28CupOutline width={32} height={32} aria-hidden="true"/></span>
+                            <div>
+                                <Text className="AchievementsSummary__eyebrow">Мой прогресс</Text>
+                                <Title level="2" weight="2" className="AchievementsSummary__value">{loaded ? `${received} из ${total}` : 'Моя коллекция'}</Title>
+                            </div>
                         </div>
-                    </HorizontalScroll>
+                        {loaded ? <>
+                            <Progress height={6} value={received / total * 100} aria-label="Прогресс достижений"
+                                aria-valuetext={`Получено ${received} из ${total}`}/>
+                            <Text className="AchievementsSummary__hint">{received === total ? 'Вся коллекция собрана!' : `Осталось: ${total - received}`}</Text>
+                        </> : this.state.loading ? <div className="AchievementsSummary__loading" role="status">
+                            <Spinner size="s" aria-label="Загрузка достижений"/><Text>Загружаем достижения...</Text>
+                        </div> : <Button size="l" mode="secondary" stretched onClick={this.load}>Повторить загрузку</Button>}
+                    </Box>
                 </Group>
 
-                <Group header={<Header>Второстепенные</Header>}>
-                    <HorizontalScroll>
-                        <div style={{ display: 'flex' }}>
-                            <HorizontalCell size='auto' title='Пончик' onClick={() => setPage('profile', 'donut')} aria-label={`Достижение «Пончик»${earned.donut ? ': получено' : ''}`}>
-                                <Image noBorder withTransparentBackground size={160} src={Donut} className={earned.donut ? '' : 'Achievements__filter'} />
-                            </HorizontalCell>
-
-                            <HorizontalCell size='auto' title='Подписчик' onClick={() => setPage('profile', 'subscriber')} aria-label={`Достижение «Подписчик»${earned.subscriber ? ': получено' : ''}`}>
-                                <Image noBorder withTransparentBackground size={160} src={Subscriber} className={earned.subscriber ? '' : 'Achievements__filter'} />
-                            </HorizontalCell>
-
-                            <HorizontalCell size='auto' title='Пасхалка' onClick={() => setPage('profile', 'easteregg')} aria-label={`Достижение «Пасхалка»${earned.easteregg ? ': получено' : ''}`}>
-                                <Image noBorder withTransparentBackground size={160} src={EasterEgg} className={earned.easteregg ? '' : 'Achievements__filter'} />
-                            </HorizontalCell>
-
-                            <HorizontalCell size='auto' title='Избранный' onClick={() => setPage('profile', 'star')} aria-label={`Достижение «Избранный»${earned.star ? ': получено' : ''}`}>
-                                <Image noBorder withTransparentBackground size={160} src={Star} className={earned.star ? '' : 'Achievements__filter'} />
-                            </HorizontalCell>
+                {categories.map(category => {
+                    const items = achievementCatalog.filter(item => item.category === category.id);
+                    const count = items.filter(item => earned[item.id]).length;
+                    return <section key={category.id} className="AchievementsCategory" aria-labelledby={`achievements-${category.id}`}>
+                        <Header id={`achievements-${category.id}`} indicator={loaded ? `${count} / ${items.length}` : undefined}>{category.title}</Header>
+                        <div className="AchievementGrid">
+                            {items.map(item => {
+                                const received = Boolean(earned[item.id]);
+                                const status = received ? 'Получено' : loaded ? 'Не получено' : 'Статус неизвестен';
+                                const StatusIcon = received ? Icon20CheckCircleOutline : loaded ? Icon20LockOutline : Icon20InfoCircleOutline;
+                                return <Tappable key={item.id} Component="button" type="button"
+                                    className={`AchievementCard${received ? ' AchievementCard--earned' : ''}`}
+                                    onClick={() => setPage('profile', item.id)} aria-label={`Достижение «${item.title}»: ${status.toLowerCase()}`}>
+                                    <AchievementIcon achievement={item.id} earned={received}/>
+                                    <span className="AchievementCard__title">{item.title}</span>
+                                    <span className="AchievementCard__description">{item.description}</span>
+                                    <span className={`AchievementStatus${received ? ' AchievementStatus--earned' : ''}`}>
+                                        <StatusIcon width={16} height={16} aria-hidden="true"/><span>{loaded || received ? status : 'Неизвестно'}</span>
+                                    </span>
+                                </Tappable>;
+                            })}
                         </div>
-                    </HorizontalScroll>
-                </Group>
-
-                {this.state.snackbar}
-            </Panel>
-        );
+                    </section>;
+                })}
+            </div>
+            {this.state.snackbar}
+        </Panel>;
     }
-
 }
 
-const mapDispatchToProps = {
-    goBack,
-    setPage,
-    loadAchievements
-};
-
-export default connect(state => ({earned: state.achievements.earned}), mapDispatchToProps)(Achievements);
+export default connect(({achievements}) => ({earned: achievements.earned, loaded: achievements.loaded}), {
+    goBack, setPage, loadAchievements,
+})(Achievements);

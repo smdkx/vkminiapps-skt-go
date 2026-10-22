@@ -1,167 +1,53 @@
-import ModalPageHeader from '../AppModalPageHeader';
 import React from 'react';
-import {connect} from 'react-redux';
-
+import {ModalPage, PanelHeaderButton, withPlatform, Platform, Title, Text, Footnote} from '@vkontakte/vkui';
 import {
-    ModalPage,
-        PanelHeaderButton,
-    withPlatform,
-    Platform,
-    Group,
-    SimpleCell,
-    Placeholder
-} from "@vkontakte/vkui";
-
-import {
-    Icon24Dismiss,
-    Icon24Cancel,
-    Icon28PaintRollerOutline,
-    Icon28SmileOutline,
-    Icon28CalendarOutline,
-    Icon28BookOutline,
-    Icon28DonateOutline,
-    Icon28UserStarBadgeOutline,
-    Icon28VideoOutline,
-    Icon28SparkleOutline,
-    Icon28FireOutline,
-    Icon28BugOutline
+    Icon24Dismiss, Icon24Cancel, Icon28PaintRollerOutline, Icon28SmileOutline,
+    Icon28CalendarOutline, Icon28BookOutline, Icon28DonateOutline, Icon28UserStarBadgeOutline,
+    Icon28VideoOutline, Icon28SparkleOutline, Icon28FireOutline, Icon28BugOutline,
 } from '@vkontakte/icons';
+import ModalPageHeader from '../AppModalPageHeader';
+import {appVersion} from '../data/profile.data';
 
-import Memoji from "../../../img/memoji.png";
+const updates = [
+    {title: 'Обновленный дизайн', description: 'Такой классный и воздушный', Icon: Icon28PaintRollerOutline},
+    {title: 'Еще больше мемов', description: 'Их много не бывает', Icon: Icon28SmileOutline},
+    {title: 'Улучшенный вид расписания', description: 'Стал еще удобнее чем было', Icon: Icon28CalendarOutline},
+    {title: 'Удобный справочник', description: 'С полезной информацией внутри', Icon: Icon28BookOutline},
+    {title: 'Премиум возможности', description: 'Открывающие новые настройки', Icon: Icon28DonateOutline},
+    {title: 'Топ студентов', description: 'Покоряй вершины уже сейчас', Icon: Icon28UserStarBadgeOutline},
+    {title: 'Отказались от рекламы', description: 'Внутри приложения', Icon: Icon28VideoOutline},
+    {title: 'Получайте достижения', description: 'И делитесь с друзьями', Icon: Icon28SparkleOutline},
+    {title: 'Обновленные разделы', description: 'Загляните на вкладку «Сервисы»', Icon: Icon28FireOutline},
+    {title: 'Исправление ошибок', description: 'С каждым обновлением их все меньше', Icon: Icon28BugOutline},
+];
 
-class UpdateInfoModal extends React.Component {
+function UpdateInfoModal({id, open, onClose, platform}) {
+    const closeButton = <PanelHeaderButton aria-label="Закрыть окно" onClick={onClose}>
+        {platform === Platform.IOS ? <Icon24Dismiss/> : <Icon24Cancel/>}
+    </PanelHeaderButton>;
 
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            device: ''
-        };
-
-    }
-
-    render() {
-        const {id, open, onClose, platform} = this.props;
-
-        return (
-            <ModalPage
-                hideCloseButton
-                open={open}
-                id={id}
-                header={
-                    <ModalPageHeader
-                        before={platform !== Platform.IOS &&
-                            <PanelHeaderButton aria-label="Закрыть окно" onClick={onClose}>
-                                <Icon24Cancel/>
-                            </PanelHeaderButton>}
-
-                        after={platform === Platform.IOS &&
-                            <PanelHeaderButton aria-label="Закрыть окно" onClick={onClose}>
-                                <Icon24Dismiss/>
-                            </PanelHeaderButton>}
-                    >
-                        Обновление приложения
-                    </ModalPageHeader>
-                }
-                onClose={() => {
-                    onClose();
-                    //document.body.style.overflow = 'auto';
-                }}
-                dynamicContentHeight
-            >
-                <Placeholder
-                        icon={<img src={Memoji} height="150" width="150" alt="memoji" />}
-                        title="Мы обновились!"
-                        >
-                            SKT Go обновился. Посмотрите, что изменилось. Вы удивитесь!
-                    </Placeholder>
-                <Group>
-                    <SimpleCell
-
-                    subtitle="Такой классный и воздушный"
-                    before={<Icon28PaintRollerOutline/>}
-                    >
-                        Обновленный дизайн
-                    </SimpleCell>
-
-                    <SimpleCell
-
-                    subtitle="Их много не бывает"
-                    before={<Icon28SmileOutline/>}
-                    >
-                        Еще больше мемов
-                    </SimpleCell>
-
-                    <SimpleCell
-
-                    subtitle="Стал еще удобнее чем было"
-                    before={<Icon28CalendarOutline/>}
-                    >
-                        Улучшенный вид расписания
-                    </SimpleCell>
-
-                    <SimpleCell
-
-                    subtitle="С полезной информацией внутри"
-                    before={<Icon28BookOutline/>}
-                    >
-                        Удобный справочник
-                    </SimpleCell>
-
-                    <SimpleCell
-
-                    subtitle="Открывающие новые настройки"
-                    before={<Icon28DonateOutline/>}
-                    >
-                        Премиум возможности
-                    </SimpleCell>
-
-                    <SimpleCell
-
-                    subtitle="Покоряй вершины уже сейчас"
-                    before={<Icon28UserStarBadgeOutline/>}
-                    >
-                        Топ студентов
-                    </SimpleCell>
-
-                    <SimpleCell
-
-                    subtitle="Внутри приложения"
-                    before={<Icon28VideoOutline/>}
-                    >
-                        Отказались от рекламы
-                    </SimpleCell>
-
-                    <SimpleCell
-
-                    subtitle="И делитесь с друзьями"
-                    before={<Icon28SparkleOutline/>}
-                    >
-                        Получайте достижения
-                    </SimpleCell>
-
-                    <SimpleCell
-
-                    subtitle="Загляните на вкладку «Сервисы»"
-                    before={<Icon28FireOutline/>}
-                    >
-                        Обновленные разделы
-                    </SimpleCell>
-
-                    <SimpleCell
-
-                    subtitle="С каждым обновлением их все меньше"
-                    before={<Icon28BugOutline/>}
-                    >
-                        Исправление ошибок
-                    </SimpleCell>
-                </Group>
-                {this.state.device !== 'mobile_iphone' && <div style={{ width: '100%', textAlign: 'center', marginTop: 8 }}>
-                </div>}
-            </ModalPage>
-        );
-    }
-
+    return <ModalPage hideCloseButton open={open} id={id} onClose={onClose} dynamicContentHeight
+        header={<ModalPageHeader before={platform !== Platform.IOS && closeButton}
+            after={platform === Platform.IOS && closeButton}>Обновление приложения</ModalPageHeader>}>
+        <div className="ServiceInfo">
+            <div className="ServiceInfo__intro">
+                <span className="ServiceInfo__logo"><Icon28SparkleOutline width={32} height={32} aria-hidden="true"/></span>
+                <div className="ServiceInfo__introText">
+                    <Title Component="h2" level="2" weight="2" className="ServiceInfo__title">Мы обновились!</Title>
+                    <Footnote Component="p" className="ServiceInfo__description">SKT Go {appVersion}</Footnote>
+                </div>
+            </div>
+            <ul className="ServiceInfo__features" aria-label="Изменения в приложении">
+                {updates.map(({title, description, Icon}) => <li key={title} className="ServiceInfo__feature">
+                    <span className="ServiceInfo__icon"><Icon aria-hidden="true"/></span>
+                    <div className="ServiceInfo__featureText">
+                        <Text Component="h3" weight="2" className="ServiceInfo__featureTitle">{title}</Text>
+                        <Footnote Component="p" className="ServiceInfo__description">{description}</Footnote>
+                    </div>
+                </li>)}
+            </ul>
+        </div>
+    </ModalPage>;
 }
 
-export default withPlatform(connect()(UpdateInfoModal));
+export default withPlatform(UpdateInfoModal);

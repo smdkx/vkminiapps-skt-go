@@ -26,7 +26,7 @@ export const subscribeToCommunity = async () => {
 };
 
 export const getCommunityErrorMessage = (error) => {
-    if (error && error.code === 'UNSUPPORTED_ENVIRONMENT') return 'Откройте приложение во ВКонтакте.';
+    if (error && error.code === 'UNSUPPORTED_ENVIRONMENT') return 'Откройте приложение внутри ВКонтакте.';
     if (error && error.code === 'UNSUPPORTED_METHOD') return 'Действие недоступно в этом клиенте.';
     if (error && error.code === 'BRIDGE_TIMEOUT') return 'Сервер не ответил вовремя.';
     if (error && error.code === 'COMMUNITY_MISMATCH') return 'Не удалось получить данные сообщества.';

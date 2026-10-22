@@ -13,13 +13,7 @@ const initialState = {
     swipeBackHistory: [],
     activeModals: {},
     modalHistory: {},
-    popouts: {},
-    scrollPosition: {}
-};
-
-const rememberScroll = (state, scrollY) => state.activePanel === null ? state.scrollPosition : {
-    ...state.scrollPosition,
-    [state.activeStory + '_' + state.activeView + '_' + state.activePanel]: scrollY || 0
+    popouts: {}
 };
 
 export const routerReducer = (state = initialState, action) => {
@@ -49,8 +43,7 @@ export const routerReducer = (state = initialState, action) => {
                 viewsHistory: {
                     ...state.viewsHistory,
                     [state.activeStory]: [...views.filter(item => item !== payload.view), payload.view]
-                },
-                scrollPosition: rememberScroll(state, payload.scrollY)
+                }
             };
         }
 
@@ -70,8 +63,7 @@ export const routerReducer = (state = initialState, action) => {
                 swipeBackHistory: panels.slice(-2),
                 storiesHistory: reset ? state.storiesHistory : [...state.storiesHistory, payload.story],
                 viewsHistory: {...state.viewsHistory, [payload.story]: views},
-                panelsHistory: {...state.panelsHistory, [activeView]: panels},
-                scrollPosition: rememberScroll(state, payload.scrollY)
+                panelsHistory: {...state.panelsHistory, [activeView]: panels}
             };
         }
 

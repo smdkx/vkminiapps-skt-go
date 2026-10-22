@@ -2,7 +2,8 @@ import {resetAchievements} from './achievements';
 import {resetMemeProgress} from './memes';
 import {resetStudentSettings} from './studentSettings';
 import {resetPremiumSettings} from './premium';
-import {setAccessToken} from './vk/actions';
+import {resetAppPreferences} from './appPreferences';
+import {resetHomeHighlights} from './homeHighlights';
 
 const RESETTING = 'account/RESETTING';
 export const ACCOUNT_CLEARED = 'account/CLEARED';
@@ -19,9 +20,10 @@ export const resetAccountData = () => dispatch => {
         dispatch(resetMemeProgress({all: true})),
         dispatch(resetStudentSettings()),
         dispatch(resetPremiumSettings()),
+        dispatch(resetAppPreferences()),
+        dispatch(resetHomeHighlights()),
     ]).then(results => {
         if (results.some(result => result.status === 'rejected')) throw new Error('Не удалось удалить все данные.');
-        dispatch(setAccessToken(null));
         dispatch({type: ACCOUNT_CLEARED});
     }).finally(() => {
         resetRequest = null;

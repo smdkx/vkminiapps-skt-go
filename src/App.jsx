@@ -1,9 +1,9 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from '@reduxjs/toolkit'
-import {goBack, closeModal, setStory, handleHistoryChange} from "./js/store/router/actions";
-import {getActivePanel} from "./js/services/_functions";
-import * as VK from './js/services/VK';
+import {goBack, closeModal, setStory, setPage, handleHistoryChange} from "./js/store/router/actions";
+import {getActivePanel} from './js/store/router/selectors';
+import {initApp} from './js/services/VK';
 import bridge from '@vkontakte/vk-bridge'
 
 import {
@@ -12,12 +12,14 @@ import {
     AppRoot,
     View, 
     Root, 
-    ConfigProvider
+    ConfigProvider,
+    Button,
+    Panel,
+    PanelSpinner
 } from "@vkontakte/vkui";
-
-import './css/style.css';
-
-/*eslint react/jsx-pascal-case: "off"*/
+import {Icon56ErrorOutline, Icon56InfoOutline} from '@vkontakte/icons';
+import {checkAppAccess, getInitialAccessStatus} from './js/services/access';
+import AccessPlaceholder from './js/components/AccessPlaceholder';
 
 //Импорт модальных окон
 import FAQModal from './js/components/modals/FAQModal';
@@ -36,7 +38,7 @@ import Profile from './js/panels/profile';
 import Feedback from './js/panels/feedback'; 
 
 //Топ студентов
-import TOP_Student from './js/panels/top_student';
+import TopStudent from './js/panels/top_student';
 
 //Расписание
 import Timetable from './js/panels/timetable';
@@ -47,37 +49,29 @@ import Random from './js/panels/random';
 
 //Панели расписаний групп
 import GroupSchedule from './js/panels/groups/groupSchedule';
-import {timetableGroups} from './js/components/data/timetable.data';
+import {timetablePanels} from './js/components/data/timetable.data';
 
-//Расписание экзаменов + панель экзаменов
+//Экзамены и практика
 import Exam from './js/panels/exam';
-import Exam_Page_1 from './js/panels/exam/exam_page_1';
-import Exam_Page_2 from './js/panels/exam/exam_page_2';
-import Exam_Page_3 from './js/panels/exam/exam_page_3';
-
-//Расписание практики + панель практика
 import Practice from './js/panels/practice';
-import Practice_Group_1 from './js/panels/practice/practice_group_1'
-import Practice_Group_2 from './js/panels/practice/practice_group_2'
 
 //Панели справочника
 import Directory from './js/panels/directory';
-import Basic_Info from './js/panels/directory/basic_info';
+import BasicInfo from './js/panels/directory/basic_info';
 import Commission from './js/panels/directory/commission';
 import Resources from './js/panels/directory/resources';
 import Security from './js/panels/directory/security';
 import Diploma from './js/panels/directory/diploma';
 import Structure from './js/panels/directory/structure';
 
-//Панели специальнсоти
+//Специальности
 import Specialties from './js/panels/directory/specialties';
-import Specialties_1 from './js/panels/directory/specialties/spec_1';
-import Specialties_2 from './js/panels/directory/specialties/spec_2';
-import Specialties_3 from './js/panels/directory/specialties/spec_3';
-import Specialties_4 from './js/panels/directory/specialties/spec_4';
-
-//Заглушки
-import Plug_1 from './js/panels/plugs/plug_1';
+import Specialty1 from './js/panels/directory/specialties/spec_1';
+import Specialty2 from './js/panels/directory/specialties/spec_2';
+import Specialty3 from './js/panels/directory/specialties/spec_3';
+import Specialty4 from './js/panels/directory/specialties/spec_4';
+import SpecialtyDetails from './js/components/SpecialtyDetails';
+import {currentSpecialties} from './js/components/data/directory.data';
 
 //Панель настроек
 import Settings from './js/panels/settings';
@@ -85,6 +79,8 @@ import Debug, {DebugPremium, DebugAchievements, DebugMemes, DebugAccount} from '
 import {loadBannerSettings, checkPremiumSubscription} from './js/store/premium';
 import AchievementTracker from './js/components/AchievementTracker';
 import AppLayout from './js/components/AppLayout';
+import {loadAppPreferences} from './js/store/appPreferences';
+import {loadHomeHighlights} from './js/store/homeHighlights';
 
 //Панель VK Donut
 import Donate from './js/panels/donate';
@@ -99,50 +95,82 @@ import Donut from './js/panels/achievements/donut';
 import Subscriber from './js/panels/achievements/subscriber';
 import EasterEgg from './js/panels/achievements/easterEgg';
 import Star from './js/panels/achievements/star';
+import ProgressAchievement from './js/panels/achievements/progress';
 
-//Саша почини настройки
-import Sasha from './js/panels/sasha';
-import Sasha_Fond from './js/panels/sasha_fond';
+//Пасхалка в сервисах
+import SashaFond from './js/panels/sasha_fond';
 
-//Блокировка приложения page
-import Placeholder_page from './js/panels/placeholder_page';
-
-//Тестовые фичи
+//Экран отключения приложения
+import PlaceholderPage from './js/panels/placeholder_page';
+import BlockedUserPage from './js/panels/blocked_user';
 
 class App extends React.Component {
     constructor(props) {
         super(props);
 
-        this.onHistoryChange = (event) => this.props.handleHistoryChange(event);
-        this.restorePanelScroll = () => {
-            const {activeView, activeStory, activePanel, scrollPosition} = this.props;
-            window.scrollTo(0, scrollPosition[activeStory + '_' + activeView + '_' + activePanel] || 0);
+        this.state = {accessStatus: getInitialAccessStatus()};
+        this.onHistoryChange = event => {
+            if (this.state.accessStatus === 'allowed') this.props.handleHistoryChange(event);
         };
     }
 
     componentDidMount() {
-        this.unsubscribeVK = this.props.dispatch(VK.initApp());
+        this.mounted = true;
+        this.unsubscribeVK = this.props.dispatch(initApp());
+        window.addEventListener('popstate', this.onHistoryChange);
+        if (this.state.accessStatus === 'allowed') this.startApp();
+        else if (this.state.accessStatus === 'checking') this.checkAccess();
+    }
+
+    startApp = () => {
+        if (!this.mounted || this.appStarted) return;
+        this.appStarted = true;
+        this.props.dispatch(loadAppPreferences()).catch(() => {});
+        this.props.dispatch(loadHomeHighlights()).catch(() => {});
         this.props.dispatch(loadBannerSettings()).catch(() => {});
         // Premium controls are unlocked automatically after successful verification.
         // Keep them locked when VK cannot confirm the subscription.
         this.props.dispatch(checkPremiumSubscription()).catch(() => {});
-        window.addEventListener('popstate', this.onHistoryChange);
-    }
+    };
+
+    checkAccess = async () => {
+        if (!this.mounted || this.accessPending) return;
+        this.accessPending = true;
+        this.setState({accessStatus: 'checking'});
+        try {
+            const accessStatus = await checkAppAccess();
+            if (!this.mounted) return;
+            this.setState({accessStatus});
+            if (accessStatus === 'allowed') this.startApp();
+        } catch {
+            if (this.mounted) this.setState({accessStatus: 'error'});
+        } finally {
+            this.accessPending = false;
+        }
+    };
 
     componentWillUnmount() {
+        this.mounted = false;
         this.unsubscribeVK();
         window.removeEventListener('popstate', this.onHistoryChange);
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.activeView !== this.props.activeView || prevProps.activeStory !== this.props.activeStory) {
-            this.restorePanelScroll();
-        }
+    renderAccessStatus() {
+        const {accessStatus} = this.state;
+        let page;
+        if (accessStatus === 'blocked') page = <BlockedUserPage id="access_status"/>;
+        else if (accessStatus === 'unavailable') page = <AccessPlaceholder id="access_status"
+            title="Приложение временно недоступно" description="Попробуйте открыть его позже." Icon={Icon56InfoOutline}/>;
+        else if (accessStatus === 'error') page = <AccessPlaceholder id="access_status"
+            title="Не удалось проверить доступ" description="Повторите попытку." Icon={Icon56ErrorOutline}
+            action={<Button size="l" mode="secondary" onClick={this.checkAccess}>Повторить</Button>}/>;
+        else page = <Panel id="access_status" centered><PanelSpinner aria-label="Проверяем доступ"/></Panel>;
+        return <View activePanel="access_status">{page}</View>;
     }
 
     render() {
-        const {goBack, setStory, closeModal, popouts, activeView, activeStory, activePanel, activeModals, swipeBackHistory, colorScheme, safeAreaInsets, hostAdaptivity} = this.props;
-        const showNavigation = !['random', 'practice', 'exam', 'placeholder_page'].includes(activePanel);
+        const {goBack, setStory, setPage, closeModal, serviceUnseen, popouts, activeView, activeStory, activePanel, activeModals, swipeBackHistory, homePanel, newsPanel, servicePanel, profilePanel, colorScheme, safeAreaInsets, hostAdaptivity} = this.props;
+        const showNavigation = !['random', 'practice', 'exam', 'placeholder_page', 'debug_region', 'debug_blocked'].includes(activePanel);
 
         const launchPlatform = new URLSearchParams(window.location.search).get('vk_platform') || '';
         const platform = launchPlatform.startsWith('desktop_') ? 'vkcom'
@@ -193,39 +221,40 @@ class App extends React.Component {
                 <AdaptivityProvider viewWidth={forcedMobile ? ViewWidth.MOBILE : undefined}
                     density={forcedMobile ? (hostAdaptivity === 'force_mobile_compact' ? 'compact' : 'regular') : undefined}>
                 <AppRoot safeAreaInsets={safeAreaInsets}>
-                    <AppLayout activeStory={activeStory} showNavigation={showNavigation} setStory={setStory}>
+                    {this.state.accessStatus === 'allowed' ? <>
+                    <AppLayout activeStory={activeStory} activePanel={activePanel} showNavigation={showNavigation} serviceUnseen={serviceUnseen} setStory={setStory}
+                        onOpenSasha={() => setPage('service', 'sasha_fond')}>
                         <Root id="home" activeView={activeView}>
                             <View
                                 id="home"
-                                activePanel={getActivePanel("home")}
+                                activePanel={homePanel}
                                 history={history}
                                 onSwipeBack={() => goBack()}
-                                onTransition={this.restorePanelScroll}
                             >
                                 <Home id="home_tab"/>
 
                                 <Feedback id="feedback"/>
 
-                                <TOP_Student id="top_student"/>
+                                <TopStudent id="top_student"/>
 
                                 <Timetable id="timetable"/>
-                                {timetableGroups.map(group => <GroupSchedule key={group.id} id={group.id} group={group}/>)}
+                                {timetablePanels.map(group => <GroupSchedule key={group.id} id={group.id} group={group}/>)}
 
                                 <Schedule id="schedule"/>
 
                                 <Practice id="practice"/>
-                                <Practice_Group_1 id="practice_group_1"/>
-                                <Practice_Group_2 id="practice_group_2"/>
 
                                 <Directory id="directory"/>
-                                <Basic_Info id="basic_info"/>
+                                <BasicInfo id="basic_info"/>
                                 <Commission id="commission"/>
 
                                 <Specialties id="spec"/>
-                                <Specialties_1 id="spec_1"/>
-                                <Specialties_2 id="spec_2"/>
-                                <Specialties_3 id="spec_3"/>
-                                <Specialties_4 id="spec_4"/>
+                                <Specialty1 id="spec_1"/>
+                                <Specialty2 id="spec_2"/>
+                                <Specialty3 id="spec_3"/>
+                                <Specialty4 id="spec_4"/>
+                                {currentSpecialties.filter(specialty => !['spec_1', 'spec_4'].includes(specialty.id))
+                                    .map(specialty => <SpecialtyDetails key={specialty.id} id={specialty.id} specialty={specialty}/>)}
                                 
                                 <Resources id="resources"/>
                                 <Security id="security"/>
@@ -233,23 +262,17 @@ class App extends React.Component {
                                 <Structure id="structure"/>
 
                                 <Exam id="exam"/>
-                                <Exam_Page_1 id="exam_page_1"/>
-                                <Exam_Page_2 id="exam_page_2"/>
-                                <Exam_Page_3 id="exam_page_3"/>
 
-                                <Plug_1 id="plug_1"/>
-
-                                <Placeholder_page id="placeholder_page"/>
+                                <PlaceholderPage id="placeholder_page"/>
                             </View>
                         </Root>
 
                         <Root id="news" activeView={activeView}>
                             <View
                                 id="news"
-                                activePanel={getActivePanel("news")}
+                                activePanel={newsPanel}
                                 history={history}
                                 onSwipeBack={() => goBack()}
-                                onTransition={this.restorePanelScroll}
                             >
                                 <News id="news_tab"/>
                             </View>
@@ -258,28 +281,27 @@ class App extends React.Component {
                         <Root id="service" activeView={activeView}>
                             <View
                                 id="service"
-                                activePanel={getActivePanel("service")}
+                                activePanel={servicePanel}
                                 history={history}
                                 onSwipeBack={() => goBack()}
-                                onTransition={this.restorePanelScroll}
                             >
                                 <Service id="service_tab"/>
 
                                 <Random id="random"/>
 
-                                <Sasha_Fond id="sasha_fond"/>
+                                <SashaFond id="sasha_fond"/>
                             </View>
                         </Root>
 
                         <Root id="profile" activeView={activeView}>
                             <View
                                 id="profile"
-                                activePanel={getActivePanel("profile")}
+                                activePanel={profilePanel}
                                 history={history}
                                 onSwipeBack={() => goBack()}
-                                onTransition={this.restorePanelScroll}
                             >
                                 <Profile id='profile_tab'/>
+                                <Random id="random" backLabel="Вернуться в профиль"/>
 
                                 <Settings id="settings"/>
                                 <Debug id="debug"/>
@@ -287,6 +309,8 @@ class App extends React.Component {
                                 <DebugAchievements id="debug_achievements"/>
                                 <DebugMemes id="debug_memes"/>
                                 <DebugAccount id="debug_account"/>
+                                <PlaceholderPage id="debug_region" onBack={goBack}/>
+                                <BlockedUserPage id="debug_blocked" onBack={goBack}/>
 
                                 <Donate id="donate"/>
 
@@ -299,14 +323,17 @@ class App extends React.Component {
                                 <Subscriber id="subscriber"/>
                                 <EasterEgg id="easteregg"/>
                                 <Star id="star"/>
+                                <ProgressAchievement id="mygroup"/>
+                                <ProgressAchievement id="memologist"/>
+                                <ProgressAchievement id="collector"/>
 
-                                <Sasha id="sasha"/>
                             </View>
                         </Root>
                     </AppLayout>
                     {homeModals}
                     {popout}
                     <AchievementTracker/>
+                    </> : this.renderAccessStatus()}
                 </AppRoot>
                 </AdaptivityProvider>
             </ConfigProvider>
@@ -317,24 +344,27 @@ class App extends React.Component {
 const mapStateToProps = (state) => {
     return {
         activeView: state.router.activeView,
+        serviceUnseen: state.homeHighlights.loaded && !state.homeHighlights.seen.includes('services'),
         activeStory: state.router.activeStory,
         activePanel: state.router.activePanel,
+        homePanel: getActivePanel(state.router, 'home'),
+        newsPanel: getActivePanel(state.router, 'news'),
+        servicePanel: getActivePanel(state.router, 'service'),
+        profilePanel: getActivePanel(state.router, 'profile'),
         swipeBackHistory: state.router.swipeBackHistory,
         activeModals: state.router.activeModals,
         popouts: state.router.popouts,
-        scrollPosition: state.router.scrollPosition,
 
-        colorScheme: state.vkui.colorScheme,
+        colorScheme: state.appPreferences.theme === 'auto' ? state.vkui.colorScheme : state.appPreferences.theme,
         safeAreaInsets: state.vkui.safeAreaInsets,
         hostAdaptivity: state.vkui.hostAdaptivity
     };
 };
 
-
 function mapDispatchToProps(dispatch) {
     return {
         dispatch,
-        ...bindActionCreators({setStory, goBack, closeModal, handleHistoryChange}, dispatch)
+        ...bindActionCreators({setStory, setPage, goBack, closeModal, handleHistoryChange}, dispatch)
     }
 }
 

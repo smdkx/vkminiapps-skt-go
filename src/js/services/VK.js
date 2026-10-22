@@ -1,11 +1,7 @@
 import VKConnect from "@vkontakte/vk-bridge";
 
-import {store} from "../../index";
-
-import {setColorScheme, setSafeAreaInsets, setHostAdaptivity, setAccessToken} from "../store/vk/actions";
-import {getCurrentAppId, sendBridgeRequest} from './bridge';
-
-const API_VERSION = '5.92';
+import {setColorScheme, setSafeAreaInsets, setHostAdaptivity} from "../store/vk/actions";
+import {sendBridgeRequest} from './bridge';
 
 export const initApp = () => (dispatch) => {
     const VKConnectCallback = (e) => {
@@ -41,18 +37,6 @@ export const initApp = () => (dispatch) => {
     return () => VKConnect.unsubscribe(VKConnectCallback);
 };
 
-export const getAuthToken = (scope) => async (dispatch) => {
-    try {
-        const appId = await getCurrentAppId();
-        const data = await sendBridgeRequest('VKWebAppGetAuthToken', {
-            app_id: appId, scope: scope.join(',')
-        }, 60000);
-        dispatch(setAccessToken(data.access_token));
-    } catch (error) {
-        dispatch(setAccessToken(null));
-    }
-};
-
 export const closeApp = () => {
     return VKConnect.send("VKWebAppClose", {
         "status": "success"
@@ -74,28 +58,6 @@ export const swipeBackOn = () => {
 export const swipeBackOff = () => {
     return VKConnect.send("VKWebAppDisableSwipeBack", {}).then(data => {
         return data;
-    }).catch(error => {
-        return error;
-    });
-};
-
-export const groupsGet = () => {
-    return APICall('groups.get', {
-        "extended": "1",
-        "fields": "description",
-        "count": "100"
-    });
-};
-
-export const APICall = (method, params) => {
-    params['access_token'] = store.getState().vkui.accessToken;
-    params['v'] = params['v'] === undefined ? API_VERSION : params['v'];
-
-    return VKConnect.send("VKWebAppCallAPIMethod", {
-        "method": method,
-        "params": params
-    }).then(data => {
-        return data.response;
     }).catch(error => {
         return error;
     });
